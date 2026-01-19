@@ -117,20 +117,29 @@ export default function SettingsPage() {
         },
         body: JSON.stringify({
           platform,
-          redirectUri: `${window.location.origin}/dashboard/settings?connected=true`,
+          redirectUri: `${window.location.origin}/api/social-accounts/callback`,
         }),
       })
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to initiate connection')
+        console.error('Connect error:', errorData)
+        throw new Error(errorData.error || errorData.hint || 'Failed to initiate connection')
       }
 
       const data = await response.json()
+      console.log('Connect response:', data)
+      
       if (data.authUrl) {
+        // Redirect to Facebook OAuth
+        console.log('Redirecting to:', data.authUrl)
         window.location.href = data.authUrl
+      } else {
+        console.error('No authUrl in response:', data)
+        throw new Error(data.error || 'No auth URL received from server. Check server logs for details.')
       }
     } catch (err: any) {
+      console.error('Connection error:', err)
       setError(err.message || 'A apărut o eroare la conectare')
       setConnectingPlatform(null)
     }
@@ -346,7 +355,11 @@ export default function SettingsPage() {
         <CardContent className="p-6 pt-0">
           {error && (
             <div className="p-4 text-sm text-red-600 bg-red-50 rounded-lg border border-red-200 mb-4">
-              {error}
+              <p className="font-semibold mb-1">Eroare:</p>
+              <p>{error}</p>
+              <p className="text-xs mt-2 text-red-500">
+                Verifică consola browser-ului (F12) pentru detalii suplimentare.
+              </p>
             </div>
           )}
           {success && (

@@ -36,13 +36,30 @@ Dacă primești eroare că tabelul nu există, rulează migrarea.
 #### Facebook & Instagram (Meta)
 1. Creează aplicație în [Facebook Developer](https://developers.facebook.com/apps)
 2. Adaugă produsul **Facebook Login** și **Instagram Basic Display**
-3. Configurează **OAuth Redirect URIs**:
-   - `https://api.outstand.so/v1/oauth/facebook/callback` (sau ce URL îți dă Outstand)
-4. Obține **App ID** (Client ID) și **App Secret** (Client Secret)
+3. **IMPORTANT - Configurează domeniile și redirect URI-urile:**
+   
+   **În tab-ul "Settings" → "Basic":**
+   - Adaugă în **App Domains**: `api.outstand.so`
+   - Adaugă în **Website** → **Site URL**: `https://api.outstand.so` (sau URL-ul tău de producție)
+   
+   **În tab-ul "Facebook Login" → "Settings":**
+   - Adaugă în **Valid OAuth Redirect URIs**:
+     - `https://api.outstand.so/v1/oauth/facebook/callback`
+     - `https://api.outstand.so/oauth/facebook/callback` (dacă există)
+     - Dacă folosești localhost pentru testare, adaugă și: `http://localhost:3000/api/social-accounts/callback`
+   
+   **În tab-ul "Products" → "Facebook Login" → "Settings":**
+   - Asigură-te că **Client OAuth Login** este activat
+   - Asigură-te că **Web OAuth Login** este activat
+   
+4. Obține **App ID** (Client ID) și **App Secret** (Client Secret) din tab-ul "Settings" → "Basic"
 5. Adaugă în Outstand dashboard:
+   - Mergi la [Outstand Dashboard](https://app.outstand.so) → **Settings** → **Social Networks**
+   - Click pe **Facebook** sau **Add Network**
    - Network: `facebook` sau `instagram`
-   - Client Key: App ID
-   - Client Secret: App Secret
+   - Client Key: App ID (din Facebook)
+   - Client Secret: App Secret (din Facebook)
+   - Salvează configurația
 
 #### LinkedIn
 1. Creează aplicație în [LinkedIn Developer Portal](https://www.linkedin.com/developers/apps)
@@ -64,9 +81,42 @@ Dacă primești eroare că tabelul nu există, rulează migrarea.
 4. Obține credențiale
 5. Adaugă în Outstand
 
-### 3.3. Alternativă: Managed Keys
+### 3.3. Publicare Aplicație pentru Utilizatori Publici
 
-Dacă nu vrei să gestionezi credențialele, contactează Outstand pentru **Managed Keys** (costă extra, dar ei gestionează totul).
+**IMPORTANT:** Dacă aplicația ta Facebook este în modul **Development**, doar testerii pot folosi OAuth. Pentru ca oricine să poată folosi aplicația:
+
+#### Opțiunea A: App Review (Recomandat pentru producție)
+
+1. **Completează informațiile aplicației:**
+   - Mergi la **Settings** → **Basic**
+   - Completează: App Name, App Icon, Privacy Policy URL, Terms of Service URL, Category, Contact Email
+   - Configurează **Website** → **Site URL**: URL-ul tău de producție
+
+2. **Solicită permisiunile necesare:**
+   - Mergi la **App Review** → **Permissions and Features**
+   - Adaugă și solicită permisiunile:
+     - `pages_show_list` - Lista paginilor
+     - `pages_manage_posts` - Publicarea postărilor
+     - `pages_read_engagement` - Citirea interacțiunilor
+     - `business_management` - Gestionarea business-ului (dacă este necesar)
+
+3. **Creează video de demonstrație** pentru fiecare permisiune
+
+4. **Trimite pentru review** (poate dura 1-7 zile)
+
+5. **Publică aplicația** după aprobare:
+   - **Settings** → **Basic** → **App Review** → **Make [App Name] public**
+
+Vezi `docs/FACEBOOK_PUBLIC_APP_SETUP.md` pentru ghid complet.
+
+#### Opțiunea B: Managed Keys (Alternativă)
+
+Dacă nu vrei să treci prin App Review, contactează Outstand pentru **Managed Keys**:
+- ✅ Outstand gestionează credențialele OAuth
+- ✅ Permisiunile sunt deja aprobate
+- ❌ Costă extra (contactează Outstand pentru prețuri)
+
+Contact: support@outstand.so sau prin dashboard-ul Outstand
 
 ## 🧪 Pasul 4: Testează Conectarea
 

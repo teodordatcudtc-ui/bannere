@@ -8,6 +8,11 @@
 const OUTSTAND_API_KEY = process.env.OUTSTAND_API_KEY
 const OUTSTAND_API_URL = 'https://api.outstand.so/v1'
 
+// Debug: Log if API key is missing (only in development)
+if (process.env.NODE_ENV === 'development' && !OUTSTAND_API_KEY) {
+  console.warn('⚠️ OUTSTAND_API_KEY is not set. Make sure it\'s in .env.local and restart the dev server.')
+}
+
 export interface SocialMediaPost {
   imageUrl: string
   caption: string
@@ -43,48 +48,22 @@ function mapPlatformToOutstand(platform: string): string {
 }
 
 /**
- * Upload media to Outstand
- * Returns media ID that can be used in posts
+ * Outstand handles media via URLs - no need to upload separately
+ * Outstand downloads the media from the URL and uploads it to the platform
+ * This function just validates the URL is accessible
  */
-export async function uploadMediaToOutstand(
-  imageUrl: string,
-  mediaType: 'image' | 'video' = 'image'
-): Promise<{ success: boolean; mediaId?: string; error?: string }> {
-  if (!OUTSTAND_API_KEY) {
-    return { success: false, error: 'OUTSTAND_API_KEY is not configured' }
-  }
-
+export async function validateMediaUrl(
+  imageUrl: string
+): Promise<{ success: boolean; error?: string }> {
   try {
-    // First, we need to fetch the image from the URL
-    const imageResponse = await fetch(imageUrl)
-    if (!imageResponse.ok) {
-      return { success: false, error: `Failed to fetch image from URL: ${imageUrl}` }
-    }
-
-    const imageBlob = await imageResponse.blob()
-    const formData = new FormData()
-    formData.append('file', imageBlob, 'image.jpg')
-    formData.append('type', mediaType)
-
-    const response = await fetch(`${OUTSTAND_API_URL}/media`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OUTSTAND_API_KEY}`,
-      },
-      body: formData,
-    })
-
+    // Verify the URL is accessible
+    const response = await fetch(imageUrl, { method: 'HEAD' })
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Outstand media upload error:', errorText)
-      return { success: false, error: `Media upload failed: ${errorText}` }
+      return { success: false, error: `Media URL is not accessible: ${imageUrl}` }
     }
-
-    const data = await response.json()
-    return { success: true, mediaId: data.id || data.media_id }
+    return { success: true }
   } catch (error: any) {
-    console.error('Error uploading media to Outstand:', error)
-    return { success: false, error: error.message }
+    return { success: false, error: `Failed to validate media URL: ${error.message}` }
   }
 }
 
@@ -106,21 +85,22 @@ export async function postToSocialMedia(
     // Map platforms to Outstand format
     const outstandPlatforms = post.platforms.map(mapPlatformToOutstand)
 
-    // Upload media first
-    const mediaResult = await uploadMediaToOutstand(post.imageUrl)
-    if (!mediaResult.success || !mediaResult.mediaId) {
+    // Validate media URL (Outstand downloads from URL, no upload needed)
+    const mediaValidation = await validateMediaUrl(post.imageUrl)
+    if (!mediaValidation.success) {
       return post.platforms.map(platform => ({
         platform,
         success: false,
-        error: mediaResult.error || 'Failed to upload media',
+        error: mediaValidation.error || 'Failed to validate media URL',
       }))
     }
 
     // Prepare request body
+    // Outstand accepts media as URLs - it will download and upload to the platform
     const requestBody: any = {
       content: post.caption,
       accounts: outstandPlatforms,
-      media: [mediaResult.mediaId],
+      media: [post.imageUrl], // Pass URL directly
     }
 
     // Add account IDs if provided
@@ -128,7 +108,7 @@ export async function postToSocialMedia(
       requestBody.account_ids = post.accountIds
     }
 
-    // Add schedule time if provided
+    // Add schedule time if provided (ISO 8601 format)
     if (post.scheduleAt) {
       requestBody.schedule_at = post.scheduleAt
     }
