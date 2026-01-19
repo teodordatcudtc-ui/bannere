@@ -230,21 +230,27 @@ The application includes an endpoint `/api/process-scheduled-posts` that process
 
 **Setup Cron Job:**
 
-1. **Vercel**: Add to `vercel.json`:
+⚠️ **Important**: Vercel Hobby plan only allows daily cron jobs (once per day). For more frequent execution, use an external service (see option 2).
+
+1. **Vercel** (Daily - for Hobby plan): Already configured in `vercel.json`:
 ```json
 {
   "crons": [{
     "path": "/api/process-scheduled-posts",
-    "schedule": "* * * * *"
+    "schedule": "0 0 * * *"
   }]
 }
 ```
+   - Runs once per day at midnight
+   - For more frequent execution, use an external service
 
-2. **External Service**: Configure a cron job to call:
+2. **External Service** (Recommended for frequent execution): Configure a cron job to call:
 ```
 POST https://yourdomain.com/api/process-scheduled-posts
 Authorization: Bearer YOUR_CRON_SECRET
 ```
+   - Recommended services: [cron-job.org](https://cron-job.org), [EasyCron](https://www.easycron.com)
+   - Can run as frequently as needed (e.g., every minute: `* * * * *`)
 
 **Environment Variables:**
 - `CRON_SECRET`: Secret for authenticating cron job requests

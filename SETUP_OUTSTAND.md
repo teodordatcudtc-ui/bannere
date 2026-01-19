@@ -109,22 +109,39 @@ După ce ai configurat totul:
 
 Pentru ca postările să se publice automat, configurează cron job-ul:
 
-### Vercel:
-Adaugă în `vercel.json`:
+### ⚠️ Important: Planul Hobby de pe Vercel
+Planul Hobby permite doar cron jobs **zilnice** (maximum o dată pe zi). Pentru frecvențe mai dese (ex: la fiecare minut sau oră), folosește un serviciu extern (vezi mai jos).
+
+### Opțiunea 1: Vercel Cron (Zilnic - pentru planul Hobby)
+Cron job-ul este deja configurat în `vercel.json` să ruleze o dată pe zi la miezul nopții:
 ```json
 {
   "crons": [{
     "path": "/api/process-scheduled-posts",
-    "schedule": "* * * * *"
+    "schedule": "0 0 * * *"
   }]
 }
 ```
 
-### Alt serviciu:
-Configurează să apeleze:
-```
-POST https://yourdomain.com/api/process-scheduled-posts
-Authorization: Bearer YOUR_CRON_SECRET
-```
+**Limitare**: Postările vor fi procesate doar o dată pe zi. Pentru procesare mai frecventă, folosește Opțiunea 2.
+
+### Opțiunea 2: Serviciu Extern (Recomandat pentru frecvențe mai dese)
+Pentru a procesa postările mai des (ex: la fiecare minut sau oră), folosește un serviciu extern:
+
+**Servicii recomandate:**
+- [cron-job.org](https://cron-job.org) (gratuit)
+- [EasyCron](https://www.easycron.com) (gratuit cu limitări)
+- [Cronitor](https://cronitor.io) (gratuit cu limitări)
+
+**Configurare:**
+1. Creează un cont pe serviciul ales
+2. Configurează un cron job care să apeleze:
+   ```
+   POST https://yourdomain.com/api/process-scheduled-posts
+   Authorization: Bearer YOUR_CRON_SECRET
+   ```
+3. Setează frecvența dorită (ex: `* * * * *` pentru fiecare minut)
+
+**Notă**: Dacă folosești un serviciu extern, poți șterge sau comenta secțiunea `crons` din `vercel.json`.
 
 Vezi `docs/AUTOMATED_POSTING_SETUP.md` pentru detalii complete.
