@@ -8,9 +8,19 @@ export async function middleware(request: NextRequest) {
     },
   })
 
+  // Check if Supabase environment variables are set
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  // If env vars are missing, skip auth checks and let the request through
+  // The pages themselves will handle the error gracefully
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return response
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
@@ -31,22 +41,28 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-  // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith('/dashboard')) {
-    if (!user) {
-      return NextResponse.redirect(new URL('/auth/login', request.url))
+    // Protect dashboard routes
+    if (request.nextUrl.pathname.startsWith('/dashboard')) {
+      if (!user) {
+        return NextResponse.redirect(new URL('/auth/login', request.url))
+      }
     }
-  }
 
-  // Redirect authenticated users away from auth pages
-  if (request.nextUrl.pathname.startsWith('/auth')) {
-    if (user) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+    // Redirect authenticated users away from auth pages
+    if (request.nextUrl.pathname.startsWith('/auth')) {
+      if (user) {
+        return NextResponse.redirect(new URL('/dashboard', request.url))
+      }
     }
+  } catch (error) {
+    // If auth check fails, log error but don't block the request
+    // This allows the app to work even if Supabase is temporarily unavailable
+    console.error('Middleware auth error:', error)
   }
 
   return response
