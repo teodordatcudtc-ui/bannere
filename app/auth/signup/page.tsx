@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-// Force dynamic rendering to prevent build-time pre-rendering
-export const dynamic = 'force-dynamic'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
