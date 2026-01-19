@@ -29,7 +29,7 @@ export function DashboardLayout({ children, credits = 0 }: DashboardLayoutProps)
   const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(({ data: { user } }: { data: { user: any } }) => {
       setUser(user)
       if (!user) {
         router.push('/auth/login')
