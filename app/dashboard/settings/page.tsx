@@ -49,11 +49,13 @@ export default function SettingsPage() {
     const urlParams = new URLSearchParams(window.location.search)
     if (urlParams.get('connected') === 'success') {
       setSuccess(true)
+      // Refresh social accounts immediately and after a short delay to ensure update
+      fetchSocialAccounts()
       setTimeout(() => {
+        fetchSocialAccounts() // Refresh again to ensure we have the latest data
         setSuccess(false)
         window.history.replaceState({}, '', '/dashboard/settings')
-      }, 3000)
-      fetchSocialAccounts()
+      }, 1000)
     }
   }, [])
 

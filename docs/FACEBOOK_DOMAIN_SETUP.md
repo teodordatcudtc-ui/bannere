@@ -19,8 +19,10 @@ Trebuie să configurezi domeniile și redirect URI-urile în aplicația ta Faceb
 
 În secțiunea **App Domains**, adaugă:
 ```
-api.outstand.so
+outstand.so
 ```
+
+⚠️ **IMPORTANT:** `outstand.so` (NU `api.outstand.so`) - conform documentației Outstand
 
 **Notă:** Nu include `http://` sau `https://`, doar domeniul.
 
@@ -28,7 +30,7 @@ api.outstand.so
 
 În secțiunea **Website**, adaugă:
 ```
-https://api.outstand.so
+https://www.outstand.so
 ```
 
 Sau URL-ul tău de producție dacă ai unul.
@@ -38,8 +40,14 @@ Sau URL-ul tău de producție dacă ai unul.
 1. Mergi la **Products** → **Facebook Login** → **Settings**
 2. În secțiunea **Valid OAuth Redirect URIs**, adaugă:
    ```
-   https://api.outstand.so/v1/oauth/facebook/callback
-   https://api.outstand.so/oauth/facebook/callback
+   https://www.outstand.so/app/api/socials/facebook/callback
+   ```
+   
+   ⚠️ **IMPORTANT:** Acesta este callback-ul Outstand conform documentației oficiale (NU `api.outstand.so/v1/oauth/facebook/callback`)
+   
+   **Dacă folosești white-labeling (flow-ul nostru), adaugă și:**
+   ```
+   https://yourdomain.com/api/social-accounts/callback
    ```
    
    **Pentru testare locală** (opțional):

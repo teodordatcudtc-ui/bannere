@@ -20,6 +20,47 @@ export async function POST(request: Request) {
       )
     }
 
+    // Verify user is connected to all selected platforms
+    const { data: connectedAccounts, error: accountsError } = await supabase
+      .from('social_accounts')
+      .select('platform')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+
+    if (accountsError) {
+      console.error('Error fetching connected accounts:', accountsError)
+      return NextResponse.json(
+        { error: 'Failed to verify connected accounts' },
+        { status: 500 }
+      )
+    }
+
+    const connectedPlatforms = (connectedAccounts || []).map((account: any) =>
+      account.platform.toLowerCase()
+    )
+
+    const disconnectedPlatforms = platforms.filter(
+      (platform) => !connectedPlatforms.includes(platform.toLowerCase())
+    )
+
+    if (disconnectedPlatforms.length > 0) {
+      const platformNames: Record<string, string> = {
+        facebook: 'Facebook',
+        instagram: 'Instagram',
+        linkedin: 'LinkedIn',
+        tiktok: 'TikTok',
+      }
+      const disconnectedNames = disconnectedPlatforms
+        .map((p) => platformNames[p.toLowerCase()] || p)
+        .join(', ')
+      return NextResponse.json(
+        {
+          error: `Nu ești conectat la: ${disconnectedNames}. Te rugăm să te conectezi la aceste platforme înainte de a programa postări.`,
+        },
+        { status: 400 }
+      )
+    }
+
     // Verify image belongs to user
     const { data: image, error: imageError } = await supabase
       .from('generated_images')

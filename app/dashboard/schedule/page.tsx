@@ -27,6 +27,7 @@ export default function SchedulePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [credits, setCredits] = useState(0)
+  const [connectedPlatforms, setConnectedPlatforms] = useState<string[]>([])
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
@@ -34,6 +35,7 @@ export default function SchedulePage() {
   useEffect(() => {
     fetchImages()
     fetchCredits()
+    fetchConnectedPlatforms()
     
     const imageId = searchParams.get('imageId')
     if (imageId) {
@@ -88,6 +90,23 @@ export default function SchedulePage() {
     }
   }
 
+  const fetchConnectedPlatforms = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const { data } = await supabase
+      .from('social_accounts')
+      .select('platform')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+
+    if (data) {
+      // Get unique platforms
+      const uniquePlatforms = [...new Set(data.map((account: any) => account.platform.toLowerCase()))]
+      setConnectedPlatforms(uniquePlatforms)
+    }
+  }
+
   const togglePlatform = (platform: string) => {
     setPlatforms((prev) =>
       prev.includes(platform)
@@ -120,6 +139,28 @@ export default function SchedulePage() {
         return
       }
 
+      // Check if user is connected to all selected platforms
+      const disconnectedPlatforms = platforms.filter(
+        (platform) => !connectedPlatforms.includes(platform.toLowerCase())
+      )
+
+      if (disconnectedPlatforms.length > 0) {
+        const platformNames: Record<string, string> = {
+          facebook: 'Facebook',
+          instagram: 'Instagram',
+          linkedin: 'LinkedIn',
+          tiktok: 'TikTok',
+        }
+        const disconnectedNames = disconnectedPlatforms
+          .map((p) => platformNames[p.toLowerCase()] || p)
+          .join(', ')
+        setError(
+          `Nu ești conectat la: ${disconnectedNames}. Te rugăm să te conectezi la aceste platforme în Settings înainte de a programa postări.`
+        )
+        setLoading(false)
+        return
+      }
+
       if (!scheduledDate || !scheduledTime) {
         setError('Te rugăm să selectezi data și ora')
         setLoading(false)
@@ -137,6 +178,13 @@ export default function SchedulePage() {
       const [hours, minutes] = scheduledTime.split(':')
       const scheduledFor = new Date(scheduledDate)
       scheduledFor.setHours(parseInt(hours), parseInt(minutes))
+
+      // Check if scheduled time is in the past
+      if (scheduledFor < new Date()) {
+        setError('Nu poți programa o postare în trecut. Te rugăm să selectezi o dată și oră viitoare.')
+        setLoading(false)
+        return
+      }
 
       // Create scheduled post
       const response = await fetch('/api/schedule-post', {
@@ -266,18 +314,55 @@ export default function SchedulePage() {
               <div className="space-y-2">
                 <Label className="text-sm font-semibold text-gray-900">Platforme</Label>
                 <div className="grid grid-cols-2 gap-3">
-                  {['facebook', 'instagram', 'linkedin', 'tiktok'].map((platform) => (
-                    <Button
-                      key={platform}
-                      type="button"
-                      variant={platforms.includes(platform) ? 'default' : 'outline'}
-                      onClick={() => togglePlatform(platform)}
-                      className="capitalize text-sm py-5"
-                    >
-                      {platform}
-                    </Button>
-                  ))}
+                  {['facebook', 'instagram', 'linkedin', 'tiktok'].map((platform) => {
+                    const isConnected = connectedPlatforms.includes(platform.toLowerCase())
+                    const isSelected = platforms.includes(platform)
+                    return (
+                      <Button
+                        key={platform}
+                        type="button"
+                        variant={isSelected ? 'default' : 'outline'}
+                        onClick={() => {
+                          if (isConnected) {
+                            togglePlatform(platform)
+                          } else {
+                            setError(
+                              `Nu ești conectat la ${platform}. Mergi la Settings pentru a te conecta.`
+                            )
+                          }
+                        }}
+                        disabled={!isConnected}
+                        className={cn(
+                          'capitalize text-sm py-5',
+                          !isConnected && 'opacity-50 cursor-not-allowed'
+                        )}
+                        title={
+                          !isConnected
+                            ? `Nu ești conectat la ${platform}. Mergi la Settings pentru a te conecta.`
+                            : undefined
+                        }
+                      >
+                        {platform}
+                        {!isConnected && (
+                          <span className="ml-2 text-xs opacity-75">(neconectat)</span>
+                        )}
+                      </Button>
+                    )
+                  })}
                 </div>
+                {connectedPlatforms.length === 0 && (
+                  <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                    Nu ai niciun cont social conectat. Mergi la{' '}
+                    <button
+                      type="button"
+                      onClick={() => router.push('/dashboard/settings')}
+                      className="underline font-semibold"
+                    >
+                      Settings
+                    </button>{' '}
+                    pentru a conecta conturile tale.
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -305,7 +390,13 @@ export default function SchedulePage() {
                         mode="single"
                         selected={scheduledDate}
                         onSelect={setScheduledDate}
-                        disabled={(date) => date < new Date()}
+                        disabled={(date) => {
+                          const today = new Date()
+                          today.setHours(0, 0, 0, 0)
+                          const compareDate = new Date(date)
+                          compareDate.setHours(0, 0, 0, 0)
+                          return compareDate < today
+                        }}
                         initialFocus
                       />
                     </PopoverContent>

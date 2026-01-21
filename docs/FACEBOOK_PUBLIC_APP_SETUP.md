@@ -48,7 +48,27 @@ Pentru a permite utilizatorilor să se conecteze la Facebook și să posteze, ai
 2. **Configurează Website:**
    - **Website** → **Site URL**: `https://yourdomain.com` (URL-ul tău de producție)
 
-### Pasul 2: Adaugă Permisiunile
+### Pasul 2: Pornește Testing pentru Facebook Login
+
+⚠️ **IMPORTANT:** Dacă vezi "Testing not started" la Facebook Login, trebuie să pornești testing-ul:
+
+1. **Mergi la Products → Facebook Login**
+2. **Click pe card-ul "Facebook Login"** (unde apare "Testing not started")
+3. **Verifică setările:**
+   - Client OAuth Login: Yes
+   - Web OAuth Login: Yes
+   - Valid OAuth Redirect URIs: `https://www.outstand.so/app/api/socials/facebook/callback`
+4. **Adaugă "Use Case":**
+   - Mergi la **Use Cases** → **Customize**
+   - Adaugă **"Facebook Login for Business"** sau **"Pages API"**
+5. **Pornește Testing:**
+   - Revino la **Products** → **Facebook Login**
+   - Click pe **"Start Testing"** sau **"Submit for Review"**
+   - Completează formularul
+
+Vezi `docs/FACEBOOK_TESTING_NOT_STARTED_FIX.md` pentru detalii complete.
+
+### Pasul 3: Adaugă Permisiunile
 
 1. Mergi la **App Review** → **Permissions and Features**
 2. Click pe **Add Permissions** sau caută permisiunile necesare

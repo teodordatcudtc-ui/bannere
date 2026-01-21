@@ -327,6 +327,7 @@ export default async function HomePage() {
             <div className="flex gap-6 text-sm text-gray-600">
               <Link href="/terms" className="hover:text-gray-900">Termeni și Condiții</Link>
               <Link href="/privacy" className="hover:text-gray-900">Politica de Confidențialitate</Link>
+              <Link href="/data-deletion" className="hover:text-gray-900">Ștergere Date</Link>
             </div>
           </div>
         </div>

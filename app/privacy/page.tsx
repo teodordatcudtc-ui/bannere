@@ -225,28 +225,51 @@ export default async function PrivacyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Transferuri Internaționale</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Dreptul la Ștergerea Datelor</h2>
+            <p className="text-gray-700 leading-relaxed mb-4">
+              Conform GDPR și cerințelor Facebook, aveți dreptul să solicitați ștergerea datelor dvs. personale în orice moment. Vă oferim mai multe modalități de a vă exercita acest drept:
+            </p>
+            <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
+              <li>Prin aplicație: Mergi la Dashboard → Settings și click pe "Șterge Cont"</li>
+              <li>Prin email: Trimite o cerere la adresa de email de contact</li>
+              <li>Prin Facebook: Șterge aplicația din setările Facebook</li>
+            </ul>
+            <p className="text-gray-700 leading-relaxed mb-4">
+              Pentru instrucțiuni detaliate despre cum să vă ștergeți datele, vă rugăm să consultați pagina dedicată:
+            </p>
+            <p className="text-gray-700 leading-relaxed">
+              <Link href="/data-deletion" className="text-[#8B7CFF] hover:underline font-medium">
+                → Instrucțiuni pentru ștergerea datelor
+              </Link>
+            </p>
+            <p className="text-gray-700 leading-relaxed mt-4">
+              Vom procesa cererea dvs. de ștergere în termen de 30 de zile, cu excepția cazurilor în care legea ne cere să păstrăm anumite date (de ex., pentru facturare sau obligații legale).
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">10. Transferuri Internaționale</h2>
             <p className="text-gray-700 leading-relaxed">
               Datele dvs. pot fi procesate și stocate în țări din afara Zonei Economice Europene (ZEE). În astfel de cazuri, ne asigurăm că există garanții adecvate de protecție a datelor, inclusiv clauze contractuale standard aprobate de Comisia Europeană sau alte mecanisme legale de protecție.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">10. Copii</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">11. Copii</h2>
             <p className="text-gray-700 leading-relaxed">
               Serviciul nu este destinat persoanelor sub 18 ani. Nu colectăm în mod intenționat date personale de la copii. Dacă descoperim că am colectat date de la un copil fără consimțământul părinților, vom șterge aceste informații imediat.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">11. Modificări ale Politicii</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">12. Modificări ale Politicii</h2>
             <p className="text-gray-700 leading-relaxed">
               Ne rezervăm dreptul de a modifica această Politică de Confidențialitate în orice moment. Vom notifica utilizatorii despre modificări importante prin email sau prin notificare pe platformă. Modificările vor intra în vigoare imediat după publicare. Utilizarea continuă a Serviciului după modificări constituie acceptarea noii Politici.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">12. Autoritatea de Supraveghere</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">13. Autoritatea de Supraveghere</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
               Dacă considerați că procesarea datelor dvs. personale încalcă GDPR-ul, aveți dreptul de a depune o plângere la autoritatea de supraveghere din țara dvs. de reședință sau la Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal (ANSPDCP) din România.
             </p>
@@ -260,7 +283,7 @@ export default async function PrivacyPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">13. Contact</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">14. Contact</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
               Pentru întrebări, solicitări sau preocupări despre această Politică de Confidențialitate sau despre modul în care procesăm datele dvs., vă rugăm să ne contactați:
             </p>
@@ -288,6 +311,7 @@ export default async function PrivacyPage() {
               <ul className="space-y-2 text-sm text-gray-600">
                 <li><Link href="/terms" className="hover:text-gray-900">Termeni și Condiții</Link></li>
                 <li><Link href="/privacy" className="hover:text-gray-900">Politica de Confidențialitate</Link></li>
+                <li><Link href="/data-deletion" className="hover:text-gray-900">Ștergere Date</Link></li>
               </ul>
             </div>
             <div>

@@ -39,14 +39,13 @@ Dacă primești eroare că tabelul nu există, rulează migrarea.
 3. **IMPORTANT - Configurează domeniile și redirect URI-urile:**
    
    **În tab-ul "Settings" → "Basic":**
-   - Adaugă în **App Domains**: `api.outstand.so`
-   - Adaugă în **Website** → **Site URL**: `https://api.outstand.so` (sau URL-ul tău de producție)
+   - Adaugă în **App Domains**: `outstand.so` (IMPORTANT: `outstand.so`, nu `api.outstand.so`)
+   - Adaugă în **Website** → **Site URL**: `https://www.outstand.so` (sau URL-ul tău de producție)
    
    **În tab-ul "Facebook Login" → "Settings":**
    - Adaugă în **Valid OAuth Redirect URIs**:
-     - `https://api.outstand.so/v1/oauth/facebook/callback`
-     - `https://api.outstand.so/oauth/facebook/callback` (dacă există)
-     - Dacă folosești localhost pentru testare, adaugă și: `http://localhost:3000/api/social-accounts/callback`
+     - `https://www.outstand.so/app/api/socials/facebook/callback` (IMPORTANT: acesta este callback-ul Outstand)
+     - Dacă folosești white-labeling (flow-ul nostru), adaugă și callback-ul tău: `https://yourdomain.com/api/social-accounts/callback`
    
    **În tab-ul "Products" → "Facebook Login" → "Settings":**
    - Asigură-te că **Client OAuth Login** este activat
@@ -76,10 +75,44 @@ Dacă primești eroare că tabelul nu există, rulează migrarea.
 
 #### TikTok
 1. Creează aplicație în [TikTok Developer Portal](https://developers.tiktok.com)
-2. Configurează OAuth
-3. Adaugă redirect URI
-4. Obține credențiale
-5. Adaugă în Outstand
+2. **Verifică ownership-ul domeniului:**
+   - În TikTok Developer Console, găsește secțiunea "Property verification"
+   - Selectează **"URL prefix"** (recomandat pentru început)
+   - Adaugă URL-ul: `https://yourdomain.com`
+   - TikTok va genera un fișier de verificare
+   - Adaugă fișierul în folder-ul `public/` al aplicației sau la root-ul domeniului
+   - Click pe "Verify" din nou
+   - Vezi `docs/TIKTOK_VERIFICATION_SETUP.md` pentru detalii complete
+3. **Configurează OAuth Redirect URI:**
+   - În TikTok Developer Console → **Basic Information**
+   - Adaugă redirect URI: `https://www.outstand.so/app/api/socials/tiktok/callback`
+   - ⚠️ **IMPORTANT:** Acesta este callback-ul Outstand conform documentației oficiale
+4. **Verifică Scopes:**
+   - Asigură-te că ai solicitat și aprobat următoarele scopes:
+     - `user.info.basic`
+     - `user.info.profile`
+     - `user.info.stats`
+     - `video.publish`
+     - `video.upload`
+     - `video.list`
+5. **Obține credențiale:**
+   - **Client Key** (Client ID)
+   - **Client Secret**
+6. **Configurează în Outstand (OBLIGATORIU - BYOK Model):**
+   - **Opțiunea 1:** Via Outstand Dashboard → Settings → Social Networks → TikTok
+   - **Opțiunea 2:** Via API:
+     ```bash
+     curl -X POST https://api.outstand.so/v1/social-networks \
+       -H "Authorization: Bearer YOUR_OUTSTAND_API_KEY" \
+       -H "Content-Type: application/json" \
+       -d '{
+         "network": "tiktok",
+         "client_key": "YOUR_TIKTOK_CLIENT_KEY",
+         "client_secret": "YOUR_TIKTOK_CLIENT_SECRET"
+       }'
+     ```
+   - ⚠️ **IMPORTANT:** TikTok folosește BYOK (Bring Your Own Key), deci trebuie să configurezi credențialele în Outstand înainte de a putea folosi OAuth
+   - Vezi `docs/TIKTOK_OUTSTAND_SETUP.md` pentru ghid complet
 
 ### 3.3. Publicare Aplicație pentru Utilizatori Publici
 
