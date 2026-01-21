@@ -101,8 +101,30 @@ export default function SchedulePage() {
       .eq('is_active', true)
 
     if (data) {
-      // Get unique platforms
-      const uniquePlatforms: string[] = [...new Set<string>(data.map((account: any) => account.platform.toLowerCase() as string))]
+      // Normalize platform names to match expected format
+      const normalizePlatform = (platform: string | null | undefined): string | null => {
+        if (!platform) return null
+        const normalized = platform.toLowerCase().trim()
+        // Map Outstand platform names to our expected format
+        const platformMap: Record<string, string> = {
+          'tiktok': 'tiktok',
+          'facebook': 'facebook',
+          'instagram': 'instagram',
+          'linkedin': 'linkedin',
+          'x': 'x',
+          'twitter': 'x',
+        }
+        return platformMap[normalized] || normalized
+      }
+
+      // Get unique platforms, filtering out null values
+      const uniquePlatforms: string[] = [
+        ...new Set<string>(
+          data
+            .map((account: any) => normalizePlatform(account.platform))
+            .filter((p: string | null): p is string => p !== null)
+        )
+      ]
       setConnectedPlatforms(uniquePlatforms)
     }
   }

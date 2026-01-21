@@ -71,27 +71,42 @@ export async function POST(request: Request) {
           continue
         }
 
-        // Get user's connected social accounts for the selected platforms
-        const { data: userAccounts } = await supabase
+        // Normalize platform names to match database format
+        const normalizePlatform = (platform: string | null | undefined): string | null => {
+          if (!platform) return null
+          const normalized = platform.toLowerCase().trim()
+          // Map Outstand platform names to our expected format
+          const platformMap: Record<string, string> = {
+            'tiktok': 'tiktok',
+            'facebook': 'facebook',
+            'instagram': 'instagram',
+            'linkedin': 'linkedin',
+            'x': 'x',
+            'twitter': 'x',
+          }
+          return platformMap[normalized] || normalized
+        }
+
+        // Get all user's connected social accounts
+        const { data: allUserAccounts } = await supabase
           .from('social_accounts')
           .select('outstand_account_id, platform')
           .eq('user_id', post.user_id)
           .eq('is_active', true)
-          .in('platform', post.platforms.map((p: string) => {
-            // Map platform names to Outstand format
-            const mapping: Record<string, string> = {
-              'facebook': 'facebook',
-              'instagram': 'instagram',
-              'linkedin': 'linkedin',
-              'tiktok': 'tiktok',
-              'twitter': 'x',
-              'x': 'x',
-            }
-            return mapping[p.toLowerCase()] || p.toLowerCase()
-          }))
+
+        // Normalize requested platforms
+        const normalizedRequestedPlatforms = post.platforms.map((p: string) => 
+          p.toLowerCase().trim()
+        )
+
+        // Filter accounts by normalized platform names
+        const userAccounts = (allUserAccounts || []).filter((acc: any) => {
+          const normalizedPlatform = normalizePlatform(acc.platform)
+          return normalizedPlatform && normalizedRequestedPlatforms.includes(normalizedPlatform)
+        })
 
         // Extract account IDs
-        const accountIds = userAccounts?.map(acc => acc.outstand_account_id) || []
+        const accountIds = userAccounts.map((acc: any) => acc.outstand_account_id)
 
         // Post to social media platforms using Outstand
         const postResults = await postToSocialMedia({
