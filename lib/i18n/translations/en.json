@@ -1,0 +1,239 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "close": "Close"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "playground": "Playground",
+    "schedule": "Schedule",
+    "calendar": "Calendar",
+    "settings": "Settings",
+    "logout": "Logout",
+    "features": "Features",
+    "pricing": "Pricing",
+    "contact": "Contact"
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Get Started",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "goToDashboard": "Go to Dashboard"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Manage AI-generated banners and scheduled posts",
+    "credits": "Credits",
+    "availableCredits": "Available credits",
+    "generatedBanners": "Generated banners",
+    "scheduledPosts": "Scheduled posts",
+    "publishedPosts": "Published posts",
+    "update": "Update",
+    "recentImages": "Recent images",
+    "seeAll": "See all",
+    "upcomingScheduled": "Upcoming scheduled posts",
+    "seeCalendar": "View calendar",
+    "recentActivity": "Recent activity",
+    "platformDistribution": "Platform distribution",
+    "noScheduledPosts": "You don't have any scheduled posts yet",
+    "noRecentActivity": "No recent activity",
+    "noImages": "You haven't generated any images yet",
+    "generateFirstBanner": "Generate your first banner",
+    "generateBanners": "Generate banners",
+    "createBanners": "Create new banners with AI using your brand kit",
+    "schedulePosts": "Schedule posts",
+    "scheduleBanners": "Schedule banners on social media platforms"
+  },
+  "playground": {
+    "title": "Playground",
+    "subtitle": "Generate professional banners with AI",
+    "prompt": "Banner description",
+    "promptPlaceholder": "Describe what you want to promote...",
+    "generate": "Generate",
+    "generating": "Generating...",
+    "generatedImages": "Generated images",
+    "images": "images",
+    "noImages": "Generated images will appear here",
+    "addTestCredits": "Add 10 test credits"
+  },
+  "schedule": {
+    "title": "Schedule",
+    "subtitle": "Schedule banners on social media platforms",
+    "selectImage": "Select image",
+    "caption": "Post text",
+    "captionPlaceholder": "Write the text for your post...",
+    "date": "Date",
+    "time": "Time",
+    "platforms": "Platforms",
+    "schedule": "Schedule",
+    "scheduling": "Scheduling...",
+    "noImages": "You don't have any generated images. Generate banners first in Playground.",
+    "insufficientCredits": "Insufficient credits. You need 5 credits to schedule a post.",
+    "selectAtLeastOnePlatform": "Select at least one platform"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "subtitle": "View all scheduled posts",
+    "noScheduledPosts": "You don't have any scheduled posts"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage brand kit and account settings",
+    "brandKit": "Brand Kit",
+    "updateBrandIdentity": "Update your brand identity settings",
+    "logo": "Logo",
+    "uploadLogo": "Upload logo",
+    "changeLogo": "Change logo",
+    "primaryColor": "Primary color",
+    "secondaryColor": "Secondary color",
+    "businessDescription": "Business description",
+    "businessDescriptionPlaceholder": "Describe your business, products and target audience...",
+    "saveChanges": "Save changes",
+    "saving": "Saving...",
+    "brandKitUpdated": "Brand kit updated successfully!",
+    "socialAccounts": "Social Media Accounts",
+    "connectAccounts": "Connect your social media accounts to schedule posts automatically",
+    "connect": "Connect",
+    "connecting": "Connecting...",
+    "connected": "Connected",
+    "disconnect": "Disconnect",
+    "disconnectConfirm": "Are you sure you want to disconnect this account?",
+    "accountConnected": "Account connected successfully!",
+    "oauthNote": "Note: To connect accounts, you must first configure OAuth credentials in Outstand dashboard. Contact the administrator for assistance."
+  },
+  "landing": {
+    "hero": {
+      "badge": "AI Generation • Automatic Scheduling",
+      "title": "No time for ads?",
+      "titleHighlight": "We'll make them for you.",
+      "description": "Generate professional banners with AI and schedule them automatically on all platforms. Save hours of work and focus on what really matters.",
+      "startFree": "Start free",
+      "seeDemo": "See demo",
+      "trial": "7 days free. No credit card required."
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "subtitle": "Three simple steps to turn your ideas into professional ads",
+      "step1": {
+        "title": "Configure your brand",
+        "description": "Upload your logo, choose colors and describe your business. Your brand kit will be automatically used in all banners."
+      },
+      "step2": {
+        "title": "Generate with AI",
+        "description": "Describe what you want to promote and our AI creates professional banners in seconds, using your brand kit."
+      },
+      "step3": {
+        "title": "Schedule and publish",
+        "description": "Choose platforms, set date and time, and let the app publish automatically. Everything from one place."
+      },
+      "cta": "Ready in less than 5 minutes. Start free now",
+      "learnMore": "Learn more"
+    },
+    "features": {
+      "title": "Stop wasting time on ads",
+      "subtitle": "The complete solution for busy businesses that don't have time to create and schedule ads manually.",
+      "aiGeneration": {
+        "title": "Advanced AI generation",
+        "description": "Generate professional banners in seconds using cutting-edge AI technology."
+      },
+      "brandKit": {
+        "title": "Integrated Brand Kit",
+        "description": "Keep your brand identity consistent across all banners with custom logos and colors."
+      },
+      "scheduling": {
+        "title": "Automatic scheduling",
+        "description": "Schedule posts on all major social media platforms from one place."
+      },
+      "timeSaving": {
+        "title": "Save precious time",
+        "description": "Stop wasting hours on design and scheduling. Generate and schedule banners in minutes, not days."
+      }
+    },
+    "pricing": {
+      "title": "Pricing plans",
+      "subtitle": "Choose the perfect plan for your needs. All plans include AI banner generation and social media scheduling.",
+      "month": "/month",
+      "creditsPerMonth": "credits/month",
+      "mostPopular": "Most popular",
+      "startNow": "Start now",
+      "starter": {
+        "name": "Starter",
+        "price": "€29",
+        "credits": "100 credits/month",
+        "features": {
+          "aiBanners": "AI banner generation",
+          "brandKit": "Brand kit setup",
+          "socialScheduling": "Social media scheduling"
+        }
+      },
+      "growth": {
+        "name": "Growth",
+        "price": "€59",
+        "credits": "300 credits/month",
+        "features": {
+          "allStarter": "Everything in Starter",
+          "moreCredits": "3x more credits",
+          "prioritySupport": "Priority support"
+        }
+      },
+      "agency": {
+        "name": "Agency",
+        "price": "€119",
+        "credits": "1000 credits/month",
+        "features": {
+          "allGrowth": "Everything in Growth",
+          "evenMoreCredits": "10x more credits",
+          "whiteLabel": "White-label options"
+        }
+      }
+    },
+    "footer": {
+      "description": "The complete solution for generating and scheduling social media banners.",
+      "product": "Product",
+      "company": "Company",
+      "support": "Support",
+      "about": "About us",
+      "blog": "Blog",
+      "documentation": "Documentation",
+      "faq": "FAQ",
+      "assistance": "Assistance",
+      "rights": "© 2024 SocialPilot. All rights reserved.",
+      "terms": "Terms and Conditions",
+      "privacy": "Privacy Policy",
+      "dataDeletion": "Data Deletion"
+    }
+  },
+  "onboarding": {
+    "title": "Brand Kit Setup",
+    "subtitle": "Configure your brand identity for your banners",
+    "logo": "Logo",
+    "uploadLogo": "Upload logo",
+    "primaryColor": "Primary color",
+    "secondaryColor": "Secondary color",
+    "businessDescription": "Business description",
+    "businessDescriptionPlaceholder": "Describe your business, products and target audience...",
+    "continue": "Continue",
+    "saving": "Saving..."
+  },
+  "subscribe": {
+    "title": "Subscribe",
+    "selectPlan": "Select plan",
+    "currentPlan": "Your current plan"
+  }
+}

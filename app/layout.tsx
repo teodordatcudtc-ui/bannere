@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
+import { I18nProvider } from "@/lib/i18n/context";
+import { Locale } from "@/lib/i18n";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -13,17 +16,26 @@ export const metadata: Metadata = {
   description: "Generate branded advertising banners using AI and schedule them automatically on social media platforms",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Get locale from cookie
+  const cookieStore = await cookies()
+  const localeCookie = cookieStore.get('NEXT_LOCALE')
+  const locale: Locale = (localeCookie?.value === 'ro' || localeCookie?.value === 'en') 
+    ? localeCookie.value 
+    : 'en'
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body
         className={`${inter.variable} font-sans antialiased`}
       >
-        {children}
+        <I18nProvider initialLocale={locale}>
+          {children}
+        </I18nProvider>
       </body>
     </html>
   );

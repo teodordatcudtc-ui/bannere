@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { cache } from 'react'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -11,13 +12,26 @@ import { getUserCredits } from '@/lib/utils/credits'
 import { format } from 'date-fns'
 import { ro } from 'date-fns/locale'
 
-export default async function DashboardPage() {
+// Cache user fetch for request deduplication
+const getCachedUser = cache(async () => {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  return user
+})
+
+// Cache credits fetch for request deduplication
+const getCachedCredits = cache(async (userId: string) => {
+  return await getUserCredits(userId)
+})
+
+export default async function DashboardPage() {
+  const user = await getCachedUser()
 
   if (!user) {
     redirect('/auth/login')
   }
+
+  const supabase = await createClient()
 
   // Check if brand kit exists
   const { data: brandKit } = await supabase
@@ -29,10 +43,10 @@ export default async function DashboardPage() {
   if (!brandKit) {
     redirect('/onboarding')
   }
-
-  // Get statistics
+  
+  // Get statistics - credits will be deduplicated if already fetched in layout
   const [credits, totalImages, totalScheduled, totalPosted] = await Promise.all([
-    getUserCredits(user.id),
+    getCachedCredits(user.id),
     supabase.from('generated_images').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
     supabase.from('scheduled_posts').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
     supabase.from('scheduled_posts').select('id', { count: 'exact', head: true }).eq('user_id', user.id).eq('status', 'posted'),

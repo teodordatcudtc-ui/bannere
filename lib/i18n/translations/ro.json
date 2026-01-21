@@ -1,0 +1,239 @@
+{
+  "common": {
+    "welcome": "Bun venit",
+    "loading": "Se încarcă...",
+    "save": "Salvează",
+    "cancel": "Anulează",
+    "delete": "Șterge",
+    "edit": "Editează",
+    "back": "Înapoi",
+    "next": "Următorul",
+    "submit": "Trimite",
+    "search": "Caută",
+    "filter": "Filtrează",
+    "close": "Închide"
+  },
+  "nav": {
+    "dashboard": "Panou de control",
+    "playground": "Playground",
+    "schedule": "Programare",
+    "calendar": "Calendar",
+    "settings": "Setări",
+    "logout": "Deconectare",
+    "features": "Funcționalități",
+    "pricing": "Prețuri",
+    "contact": "Contact"
+  },
+  "auth": {
+    "login": "Autentificare",
+    "signup": "Începe acum",
+    "email": "Email",
+    "password": "Parolă",
+    "forgotPassword": "Ai uitat parola?",
+    "noAccount": "Nu ai cont?",
+    "hasAccount": "Ai deja cont?",
+    "signIn": "Conectează-te",
+    "signUp": "Creează cont",
+    "goToDashboard": "Mergi la Dashboard"
+  },
+  "dashboard": {
+    "title": "Panou de control",
+    "subtitle": "Gestionează bannerele generate cu AI și postările programate",
+    "credits": "Credite",
+    "availableCredits": "Credite disponibile",
+    "generatedBanners": "Bannere generate",
+    "scheduledPosts": "Postări programate",
+    "publishedPosts": "Postări publicate",
+    "update": "Actualizează",
+    "recentImages": "Imagini recente",
+    "seeAll": "Vezi toate",
+    "upcomingScheduled": "Postări programate",
+    "seeCalendar": "Vezi calendar",
+    "recentActivity": "Activitate recentă",
+    "platformDistribution": "Distribuție platforme",
+    "noScheduledPosts": "Nu ai postări programate încă",
+    "noRecentActivity": "Nu există activitate recentă",
+    "noImages": "Nu ai generat încă imagini",
+    "generateFirstBanner": "Generează primul tău banner",
+    "generateBanners": "Generează bannere",
+    "createBanners": "Creează bannere noi cu AI folosind brand kit-ul tău",
+    "schedulePosts": "Programează postări",
+    "scheduleBanners": "Programează bannerele pe platformele de social media"
+  },
+  "playground": {
+    "title": "Playground",
+    "subtitle": "Generează bannere profesionale cu AI",
+    "prompt": "Descriere banner",
+    "promptPlaceholder": "Descrie ce vrei să promovezi...",
+    "generate": "Generează",
+    "generating": "Se generează...",
+    "generatedImages": "Imagini generate",
+    "images": "imagini",
+    "noImages": "Imaginile generate vor apărea aici",
+    "addTestCredits": "Adaugă 10 credite de test"
+  },
+  "schedule": {
+    "title": "Programare",
+    "subtitle": "Programează bannerele pe platformele de social media",
+    "selectImage": "Selectează imagine",
+    "caption": "Text postare",
+    "captionPlaceholder": "Scrie textul pentru postare...",
+    "date": "Data",
+    "time": "Ora",
+    "platforms": "Platforme",
+    "schedule": "Programează",
+    "scheduling": "Se programează...",
+    "noImages": "Nu ai imagini generate. Generează mai întâi bannere în Playground.",
+    "insufficientCredits": "Credite insuficiente. Ai nevoie de 5 credite pentru a programa o postare.",
+    "selectAtLeastOnePlatform": "Selectează cel puțin o platformă"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "subtitle": "Vezi toate postările programate",
+    "noScheduledPosts": "Nu ai postări programate"
+  },
+  "settings": {
+    "title": "Setări",
+    "subtitle": "Gestionează brand kit-ul și setările contului",
+    "brandKit": "Brand Kit",
+    "updateBrandIdentity": "Actualizează setările identității tale de brand",
+    "logo": "Logo",
+    "uploadLogo": "Încarcă logo",
+    "changeLogo": "Schimbă logo",
+    "primaryColor": "Culoare principală",
+    "secondaryColor": "Culoare secundară",
+    "businessDescription": "Descriere business",
+    "businessDescriptionPlaceholder": "Descrie business-ul tău, produsele și publicul țintă...",
+    "saveChanges": "Salvează modificările",
+    "saving": "Se salvează...",
+    "brandKitUpdated": "Brand kit actualizat cu succes!",
+    "socialAccounts": "Conturi Social Media",
+    "connectAccounts": "Conectează conturile tale de social media pentru a programa postări automat",
+    "connect": "Conectează",
+    "connecting": "Se conectează...",
+    "connected": "Conectat",
+    "disconnect": "Deconectează",
+    "disconnectConfirm": "Ești sigur că vrei să deconectezi acest cont?",
+    "accountConnected": "Cont conectat cu succes!",
+    "oauthNote": "Notă: Pentru a conecta conturile, trebuie să configurezi mai întâi credențialele OAuth în Outstand dashboard. Contactează administratorul pentru asistență."
+  },
+  "landing": {
+    "hero": {
+      "badge": "Generare AI • Programare automată",
+      "title": "Nu ai timp de reclame?",
+      "titleHighlight": "Noi le facem pentru tine.",
+      "description": "Generează bannere profesionale cu AI și programează-le automat pe toate platformele. Economisește ore de muncă și concentrează-te pe ceea ce contează cu adevărat.",
+      "startFree": "Începe gratuit",
+      "seeDemo": "Vezi demo",
+      "trial": "7 zile gratuite. Fără card de credit."
+    },
+    "howItWorks": {
+      "title": "Cum funcționează",
+      "subtitle": "Trei pași simpli pentru a transforma ideile tale în reclame profesionale",
+      "step1": {
+        "title": "Configurează brand-ul",
+        "description": "Încarcă logo-ul, alege culorile și descrie business-ul tău. Brand kit-ul tău va fi folosit automat în toate bannerele."
+      },
+      "step2": {
+        "title": "Generează cu AI",
+        "description": "Descrie ce vrei să promovezi și AI-ul nostru creează bannere profesionale în secunde, folosind brand kit-ul tău."
+      },
+      "step3": {
+        "title": "Programează și publică",
+        "description": "Alege platformele, setează data și ora, și lasă aplicația să publice automat. Totul dintr-un singur loc."
+      },
+      "cta": "Gata în mai puțin de 5 minute. Începe acum gratuit",
+      "learnMore": "Află mai mult"
+    },
+    "features": {
+      "title": "Nu mai pierde timp cu reclamele",
+      "subtitle": "Soluția completă pentru afaceri ocupate care nu au timp să creeze și să programeze reclame manual.",
+      "aiGeneration": {
+        "title": "Generare AI avansată",
+        "description": "Generează bannere profesionale în secunde folosind tehnologie AI de ultimă generație."
+      },
+      "brandKit": {
+        "title": "Brand Kit integrat",
+        "description": "Păstrează-ți identitatea de brand consistentă pe toate bannerele cu logo-uri și culori personalizate."
+      },
+      "scheduling": {
+        "title": "Programare automată",
+        "description": "Programează postările pe toate platformele majore de social media dintr-un singur loc."
+      },
+      "timeSaving": {
+        "title": "Economisește timp prețios",
+        "description": "Nu mai pierde ore cu design și programare. Generează și programează bannere în minute, nu zile."
+      }
+    },
+    "pricing": {
+      "title": "Planuri de prețuri",
+      "subtitle": "Alege planul perfect pentru nevoile tale. Toate planurile includ generare bannere cu AI și programare social media.",
+      "month": "/lună",
+      "creditsPerMonth": "credite/lună",
+      "mostPopular": "Cel mai popular",
+      "startNow": "Începe acum",
+      "starter": {
+        "name": "Starter",
+        "price": "€29",
+        "credits": "100 credite/lună",
+        "features": {
+          "aiBanners": "Generare bannere cu AI",
+          "brandKit": "Configurare brand kit",
+          "socialScheduling": "Programare social media"
+        }
+      },
+      "growth": {
+        "name": "Growth",
+        "price": "€59",
+        "credits": "300 credite/lună",
+        "features": {
+          "allStarter": "Tot ce e în Starter",
+          "moreCredits": "3x mai multe credite",
+          "prioritySupport": "Suport prioritar"
+        }
+      },
+      "agency": {
+        "name": "Agency",
+        "price": "€119",
+        "credits": "1000 credite/lună",
+        "features": {
+          "allGrowth": "Tot ce e în Growth",
+          "evenMoreCredits": "10x mai multe credite",
+          "whiteLabel": "Opțiuni white-label"
+        }
+      }
+    },
+    "footer": {
+      "description": "Soluția completă pentru generarea și programarea bannerelor de social media.",
+      "product": "Produs",
+      "company": "Companie",
+      "support": "Suport",
+      "about": "Despre noi",
+      "blog": "Blog",
+      "documentation": "Documentație",
+      "faq": "FAQ",
+      "assistance": "Asistență",
+      "rights": "© 2024 SocialPilot. Toate drepturile rezervate.",
+      "terms": "Termeni și Condiții",
+      "privacy": "Politica de Confidențialitate",
+      "dataDeletion": "Ștergere Date"
+    }
+  },
+  "onboarding": {
+    "title": "Configurare Brand Kit",
+    "subtitle": "Configurează identitatea de brand pentru bannerele tale",
+    "logo": "Logo",
+    "uploadLogo": "Încarcă logo",
+    "primaryColor": "Culoare principală",
+    "secondaryColor": "Culoare secundară",
+    "businessDescription": "Descriere business",
+    "businessDescriptionPlaceholder": "Descrie business-ul tău, produsele și publicul țintă...",
+    "continue": "Continuă",
+    "saving": "Se salvează..."
+  },
+  "subscribe": {
+    "title": "Abonare",
+    "selectPlan": "Selectează planul",
+    "currentPlan": "Planul tău actual"
+  }
+}

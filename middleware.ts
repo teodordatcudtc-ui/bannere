@@ -1,12 +1,27 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { detectLocaleFromRequest } from './lib/i18n/geolocation'
+import { Locale } from './lib/i18n'
 
 export async function middleware(request: NextRequest) {
+  // Detect locale from geolocation
+  const locale = detectLocaleFromRequest(request)
+  
+  // Create response
   let response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   })
+
+  // Set locale cookie if not already set
+  if (!request.cookies.get('NEXT_LOCALE')) {
+    response.cookies.set('NEXT_LOCALE', locale, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+      sameSite: 'lax',
+    })
+  }
 
   // Check if Supabase environment variables are set
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL

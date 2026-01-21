@@ -44,11 +44,11 @@ export function DashboardLayout({ children, credits = 0 }: DashboardLayoutProps)
   }
 
   const navItems = [
-    { href: '/dashboard', label: 'Panou de control', icon: LayoutDashboard, color: 'from-[#8B7CFF] to-[#A78BFA]' },
-    { href: '/dashboard/playground', label: 'Playground', icon: Sparkles, color: 'from-[#60A5FA] to-[#3B82F6]' },
-    { href: '/dashboard/schedule', label: 'Programare', icon: Calendar, color: 'from-[#FCA5A5] to-[#EF4444]' },
-    { href: '/dashboard/calendar', label: 'Calendar', icon: CalendarDays, color: 'from-[#9333EA] to-[#7C3AED]' },
-    { href: '/dashboard/settings', label: 'Setări', icon: Settings, color: 'from-[#34D399] to-[#10B981]' },
+    { href: '/dashboard', label: 'Panou de control', icon: LayoutDashboard },
+    { href: '/dashboard/playground', label: 'Playground', icon: Sparkles },
+    { href: '/dashboard/schedule', label: 'Programare', icon: Calendar },
+    { href: '/dashboard/calendar', label: 'Calendar', icon: CalendarDays },
+    { href: '/dashboard/settings', label: 'Setări', icon: Settings },
   ]
 
   return (
@@ -67,13 +67,18 @@ export function DashboardLayout({ children, credits = 0 }: DashboardLayoutProps)
             const Icon = item.icon
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
             return (
-              <Link key={item.href} href={item.href}>
+              <Link 
+                key={item.href} 
+                href={item.href}
+                prefetch={true}
+                className="block"
+              >
                 <div
                   className={`
                     w-full px-5 py-3 rounded-xl transition-all flex items-center gap-3 text-sm font-medium
                     ${isActive 
-                      ? `bg-gradient-to-r ${item.color} text-white shadow-md` 
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gray-900 text-white shadow-sm' 
+                      : 'text-gray-700 hover:bg-gray-100'
                     }
                   `}
                 >
