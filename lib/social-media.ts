@@ -95,26 +95,49 @@ export async function postToSocialMedia(
       }))
     }
 
-    // Prepare request body
-    // Outstand accepts media as URLs - it will download and upload to the platform
+    // Prepare request body according to Outstand API documentation
+    // https://www.outstand.so/docs/api-reference/posts/create-a-post
     const requestBody: any = {
-      content: post.caption,
-      accounts: outstandPlatforms,
-      media: [post.imageUrl], // Pass URL directly
+      accounts: post.accountIds && post.accountIds.length > 0 
+        ? post.accountIds  // Use account IDs if provided (e.g., account IDs from Outstand)
+        : outstandPlatforms, // Otherwise use platform names (e.g., 'tiktok', 'facebook') - Outstand will post to all connected accounts
     }
 
-    // Add account IDs if provided
-    if (post.accountIds && post.accountIds.length > 0) {
-      requestBody.account_ids = post.accountIds
+    // Add media URLs - Outstand will download and upload to the platform
+    if (post.imageUrl) {
+      // Extract filename from URL or use default
+      const urlParts = post.imageUrl.split('/')
+      const urlFilename = urlParts[urlParts.length - 1].split('?')[0] // Remove query params
+      const filename = urlFilename && urlFilename.includes('.') 
+        ? urlFilename 
+        : `image_${Date.now()}.jpg` // Default filename if not found
+      
+      // Use containers for posts with media
+      requestBody.containers = [
+        {
+          content: post.caption,
+          media: [
+            {
+              url: post.imageUrl,
+              filename: filename,
+            }
+          ]
+        }
+      ]
+    } else {
+      // Use simple content for text-only posts
+      requestBody.content = post.caption
     }
 
     // Add schedule time if provided (ISO 8601 format)
     if (post.scheduleAt) {
-      requestBody.schedule_at = post.scheduleAt
+      requestBody.scheduledAt = post.scheduleAt
     }
 
+    console.log('Posting to Outstand:', JSON.stringify(requestBody, null, 2))
+
     // Post to Outstand API
-    const response = await fetch(`${OUTSTAND_API_URL}/posts`, {
+    const response = await fetch(`${OUTSTAND_API_URL}/posts/`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OUTSTAND_API_KEY}`,
@@ -144,27 +167,44 @@ export async function postToSocialMedia(
     }
 
     const data = await response.json()
+    console.log('Outstand API response:', JSON.stringify(data, null, 2))
 
-    // Outstand returns a unified response
-    // If it's a single post object, extract the ID
-    // If it's an array of results, map them
-    if (Array.isArray(data)) {
-      return data.map((result: any, index: number) => ({
-        platform: post.platforms[index] || 'unknown',
-        success: result.status === 'published' || result.status === 'scheduled',
-        postId: result.id || result.post_id,
-        error: result.error || undefined,
-      }))
-    } else {
-      // Single post response
-      const postId = data.id || data.post_id
-      const isSuccess = data.status === 'published' || data.status === 'scheduled' || data.status === 'scheduled'
+    // Outstand returns: { success: true, post: { id, scheduledAt, socialAccounts, containers, ... } }
+    if (data.success && data.post) {
+      const postId = data.post.id
+      const isScheduled = data.post.scheduledAt !== null && data.post.scheduledAt !== undefined
+      const isPublished = data.post.publishedAt !== null && data.post.publishedAt !== undefined
       
+      // If we have a postId, the post was created successfully (either scheduled or published)
+      const postCreated = !!postId
+      
+      // Map social accounts from response to platforms
+      const socialAccounts = data.post.socialAccounts || []
+      const platformMap: Record<string, string> = {}
+      socialAccounts.forEach((acc: any) => {
+        platformMap[acc.network] = acc.network
+      })
+      
+      return post.platforms.map(platform => {
+        const outstandPlatform = mapPlatformToOutstand(platform)
+        const hasAccount = socialAccounts.some((acc: any) => 
+          acc.network === outstandPlatform || acc.network === platform
+        )
+        
+        return {
+          platform,
+          success: postCreated, // If postId exists, post was created successfully
+          postId: postId,
+          error: hasAccount ? undefined : `No account found for ${platform}`,
+        }
+      })
+    } else {
+      // Error response
+      const errorMessage = data.error || data.message || 'Unknown error'
       return post.platforms.map(platform => ({
         platform,
-        success: isSuccess,
-        postId: postId,
-        error: data.error || undefined,
+        success: false,
+        error: errorMessage,
       }))
     }
   } catch (error: any) {

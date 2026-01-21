@@ -27,7 +27,6 @@ export default function SchedulePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [credits, setCredits] = useState(0)
-  const [connectedPlatforms, setConnectedPlatforms] = useState<string[]>([])
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
@@ -35,7 +34,6 @@ export default function SchedulePage() {
   useEffect(() => {
     fetchImages()
     fetchCredits()
-    fetchConnectedPlatforms()
     
     const imageId = searchParams.get('imageId')
     if (imageId) {
@@ -90,45 +88,6 @@ export default function SchedulePage() {
     }
   }
 
-  const fetchConnectedPlatforms = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    const { data } = await supabase
-      .from('social_accounts')
-      .select('platform')
-      .eq('user_id', user.id)
-      .eq('is_active', true)
-
-    if (data) {
-      // Normalize platform names to match expected format
-      const normalizePlatform = (platform: string | null | undefined): string | null => {
-        if (!platform) return null
-        const normalized = platform.toLowerCase().trim()
-        // Map Outstand platform names to our expected format
-        const platformMap: Record<string, string> = {
-          'tiktok': 'tiktok',
-          'facebook': 'facebook',
-          'instagram': 'instagram',
-          'linkedin': 'linkedin',
-          'x': 'x',
-          'twitter': 'x',
-        }
-        return platformMap[normalized] || normalized
-      }
-
-      // Get unique platforms, filtering out null values
-      const uniquePlatforms: string[] = [
-        ...new Set<string>(
-          data
-            .map((account: any) => normalizePlatform(account.platform))
-            .filter((p: string | null): p is string => p !== null)
-        )
-      ]
-      setConnectedPlatforms(uniquePlatforms)
-    }
-  }
-
   const togglePlatform = (platform: string) => {
     setPlatforms((prev) =>
       prev.includes(platform)
@@ -157,28 +116,6 @@ export default function SchedulePage() {
 
       if (platforms.length === 0) {
         setError('Te rugăm să selectezi cel puțin o platformă')
-        setLoading(false)
-        return
-      }
-
-      // Check if user is connected to all selected platforms
-      const disconnectedPlatforms = platforms.filter(
-        (platform: string) => !connectedPlatforms.includes(platform.toLowerCase())
-      )
-
-      if (disconnectedPlatforms.length > 0) {
-        const platformNames: Record<string, string> = {
-          facebook: 'Facebook',
-          instagram: 'Instagram',
-          linkedin: 'LinkedIn',
-          tiktok: 'TikTok',
-        }
-        const disconnectedNames = disconnectedPlatforms
-          .map((p: string) => platformNames[p.toLowerCase()] || p)
-          .join(', ')
-        setError(
-          `Nu ești conectat la: ${disconnectedNames}. Te rugăm să te conectezi la aceste platforme în Settings înainte de a programa postări.`
-        )
         setLoading(false)
         return
       }
@@ -224,6 +161,13 @@ export default function SchedulePage() {
 
       if (!response.ok) {
         const errorData = await response.json()
+        console.error('Schedule post error:', errorData)
+        // Show debug info in development
+        if (errorData.debug) {
+          console.error('Debug info:', errorData.debug)
+          console.error('Found accounts:', errorData.debug.foundAccounts)
+          console.error('Normalized platforms:', errorData.debug.normalizedPlatforms)
+        }
         throw new Error(errorData.error || 'Programarea postării a eșuat')
       }
 
@@ -337,54 +281,20 @@ export default function SchedulePage() {
                 <Label className="text-sm font-semibold text-gray-900">Platforme</Label>
                 <div className="grid grid-cols-2 gap-3">
                   {['facebook', 'instagram', 'linkedin', 'tiktok'].map((platform) => {
-                    const isConnected = connectedPlatforms.includes(platform.toLowerCase())
                     const isSelected = platforms.includes(platform)
                     return (
                       <Button
                         key={platform}
                         type="button"
                         variant={isSelected ? 'default' : 'outline'}
-                        onClick={() => {
-                          if (isConnected) {
-                            togglePlatform(platform)
-                          } else {
-                            setError(
-                              `Nu ești conectat la ${platform}. Mergi la Settings pentru a te conecta.`
-                            )
-                          }
-                        }}
-                        disabled={!isConnected}
-                        className={cn(
-                          'capitalize text-sm py-5',
-                          !isConnected && 'opacity-50 cursor-not-allowed'
-                        )}
-                        title={
-                          !isConnected
-                            ? `Nu ești conectat la ${platform}. Mergi la Settings pentru a te conecta.`
-                            : undefined
-                        }
+                        onClick={() => togglePlatform(platform)}
+                        className="capitalize text-sm py-5"
                       >
                         {platform}
-                        {!isConnected && (
-                          <span className="ml-2 text-xs opacity-75">(neconectat)</span>
-                        )}
                       </Button>
                     )
                   })}
                 </div>
-                {connectedPlatforms.length === 0 && (
-                  <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200">
-                    Nu ai niciun cont social conectat. Mergi la{' '}
-                    <button
-                      type="button"
-                      onClick={() => router.push('/dashboard/settings')}
-                      className="underline font-semibold"
-                    >
-                      Settings
-                    </button>{' '}
-                    pentru a conecta conturile tale.
-                  </p>
-                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">

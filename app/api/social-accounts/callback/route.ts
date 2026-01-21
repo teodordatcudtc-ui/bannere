@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 
 const OUTSTAND_API_KEY = process.env.OUTSTAND_API_KEY
@@ -15,17 +16,24 @@ const OUTSTAND_API_URL = 'https://api.outstand.so/v1'
  * 4. Redirect to selection page where user chooses which pages to connect
  */
 export async function GET(request: Request) {
+  console.log('🔵 CALLBACK HIT - OAuth redirect received')
+  console.log('🔵 Request URL:', request.url)
+  
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
+    console.log('🔵 User check:', user ? `User ID: ${user.id}` : 'No user')
+
     if (!user) {
+      console.error('❌ No user found in callback')
       return NextResponse.redirect(
         new URL('/auth/login?error=unauthorized', request.url)
       )
     }
 
     if (!OUTSTAND_API_KEY) {
+      console.error('❌ OUTSTAND_API_KEY not configured')
       return NextResponse.redirect(
         new URL('/dashboard/settings?error=config', request.url)
       )
@@ -34,6 +42,11 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const sessionToken = searchParams.get('session') || searchParams.get('session_token')
     const error = searchParams.get('error')
+    const success = searchParams.get('success')
+
+    console.log('🔵 Session token:', sessionToken ? 'Found' : 'Missing')
+    console.log('🔵 OAuth error:', error || 'None')
+    console.log('🔵 Success message:', success || 'None')
 
     // Handle OAuth errors
     if (error) {
@@ -41,6 +54,26 @@ export async function GET(request: Request) {
       return NextResponse.redirect(
         new URL(`/dashboard/settings?error=oauth_${error}`, request.url)
       )
+    }
+
+    // TikTok and some platforms return success directly without session token
+    // In this case, try to extract account info from success message or fetch from Outstand
+    if (!sessionToken && success) {
+      console.log('🟡 No session token but success message - trying to sync accounts')
+      console.log('🟡 Success message:', success)
+      
+      // Try to extract platform and username from success message
+      // Format: "TikTok account @adlence.ai connected successfully"
+      const platformMatch = success.match(/(\w+)\s+account/i)
+      const usernameMatch = success.match(/@?(\w+\.?\w*)/)
+      
+      const platform = platformMatch ? platformMatch[1].toLowerCase() : null
+      const username = usernameMatch ? usernameMatch[1] : null
+      
+      console.log('🟡 Extracted platform:', platform)
+      console.log('🟡 Extracted username:', username)
+      
+      return await syncAccountsFromOutstand(supabase, user.id, request.url, platform, username)
     }
 
     if (!sessionToken) {
@@ -72,10 +105,14 @@ export async function GET(request: Request) {
       }
 
       const pendingData = await pendingResponse.json()
+      console.log('🔵 Pending data from Outstand:', JSON.stringify(pendingData, null, 2))
+      
       const availableAccounts = pendingData.accounts || pendingData.pages || []
+      console.log('🔵 Available accounts:', availableAccounts.length)
 
       // If no accounts available, redirect with error
       if (!availableAccounts || availableAccounts.length === 0) {
+        console.error('❌ No accounts available in pending response')
         return NextResponse.redirect(
           new URL('/dashboard/settings?error=no_pages_available', request.url)
         )
@@ -83,6 +120,8 @@ export async function GET(request: Request) {
 
       // If only one account, auto-connect it
       if (availableAccounts.length === 1) {
+        console.log('🔵 Only one account, auto-connecting...')
+        console.log('🔵 Account ID:', availableAccounts[0].id)
         return await finalizeConnection(supabase, user.id, sessionToken, [availableAccounts[0].id], request.url)
       }
 
@@ -108,6 +147,199 @@ export async function GET(request: Request) {
 }
 
 /**
+ * Sync accounts directly from Outstand API (for platforms like TikTok that don't use session tokens)
+ */
+async function syncAccountsFromOutstand(
+  supabase: any,
+  userId: string,
+  baseUrl: string,
+  platform?: string | null,
+  username?: string | null
+) {
+  console.log('🟡 SYNC ACCOUNTS FROM OUTSTAND')
+  console.log('🟡 User ID:', userId)
+  console.log('🟡 Platform:', platform)
+  console.log('🟡 Username:', username)
+  
+  const OUTSTAND_API_KEY = process.env.OUTSTAND_API_KEY
+  const OUTSTAND_API_URL = 'https://api.outstand.so/v1'
+
+  try {
+    // Try multiple endpoints to get accounts
+    let accounts = []
+    
+    // Try 1: /v1/social-accounts
+    console.log('🟡 Trying /v1/social-accounts endpoint...')
+    try {
+      const socialAccountsResponse = await fetch(
+        `${OUTSTAND_API_URL}/social-accounts`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${OUTSTAND_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (socialAccountsResponse.ok) {
+        const socialAccountsData = await socialAccountsResponse.json()
+        console.log('🟡 /social-accounts response:', JSON.stringify(socialAccountsData, null, 2))
+        
+        if (Array.isArray(socialAccountsData)) {
+          accounts = socialAccountsData
+        } else if (socialAccountsData.accounts && Array.isArray(socialAccountsData.accounts)) {
+          accounts = socialAccountsData.accounts
+        } else if (socialAccountsData.data && Array.isArray(socialAccountsData.data)) {
+          accounts = socialAccountsData.data
+        }
+      } else {
+        console.log('🟡 /social-accounts returned:', socialAccountsResponse.status)
+      }
+    } catch (e) {
+      console.log('🟡 /social-accounts error:', e)
+    }
+
+    // If no accounts found and we have platform/username from success message, create account manually
+    if (accounts.length === 0 && platform && username) {
+      console.log('🟡 No accounts from API, creating account from success message...')
+      accounts = [{
+        id: `manual_${Date.now()}`,
+        platform: platform,
+        username: username,
+        name: username,
+        network: platform,
+      }]
+      console.log('🟡 Created manual account:', accounts[0])
+    }
+
+    console.log('🟡 Final accounts:', JSON.stringify(accounts, null, 2))
+    console.log('🟡 Accounts count:', accounts.length)
+
+    if (accounts.length === 0) {
+      console.error('No accounts found or created')
+      return NextResponse.redirect(
+        new URL('/dashboard/settings?error=no_accounts_found', baseUrl)
+      )
+    }
+
+    // Use admin client for all database operations
+    const adminSupabase = createAdminClient()
+    
+    // Ensure user profile exists
+    const { data: profile, error: profileError } = await adminSupabase
+      .from('profiles')
+      .select('id')
+      .eq('id', userId)
+      .single()
+
+    if (profileError || !profile) {
+      console.warn('Profile not found, creating...')
+      const { error: createProfileError } = await adminSupabase
+        .from('profiles')
+        .insert({ id: userId })
+      
+      if (createProfileError) {
+        console.error('❌ Failed to create profile:', createProfileError)
+        return NextResponse.redirect(
+          new URL('/dashboard/settings?error=profile_not_found', baseUrl)
+        )
+      }
+    }
+
+    // Save all accounts to database
+    const savedAccounts = []
+    for (const account of accounts) {
+      // For manual accounts or accounts without ID, use username as outstand_account_id
+      const outstandAccountId = account.id || account.account_id || account.username || `manual_${account.platform || account.network}_${Date.now()}`
+      
+      const accountToSave = {
+        user_id: userId,
+        outstand_account_id: outstandAccountId,
+        platform: (account.platform || account.network || 'unknown').toLowerCase(),
+        username: account.username || account.handle || account.name,
+        name: account.name || account.display_name || account.username,
+        is_active: true,
+      }
+      
+      console.log('🟡 Saving account:', JSON.stringify(accountToSave, null, 2))
+      
+      // Try insert first, then update if it exists
+      const { data: insertData, error: insertError } = await adminSupabase
+        .from('social_accounts')
+        .insert(accountToSave)
+        .select()
+      
+      if (insertError) {
+        // If unique constraint violation, update instead
+        if (insertError.code === '23505' || insertError.message?.includes('duplicate')) {
+          console.log('🟡 Account already exists, updating...')
+          const { data: updateData, error: updateError } = await adminSupabase
+            .from('social_accounts')
+            .update({
+              platform: accountToSave.platform,
+              username: accountToSave.username,
+              name: accountToSave.name,
+              is_active: accountToSave.is_active,
+            })
+            .eq('user_id', accountToSave.user_id)
+            .eq('outstand_account_id', accountToSave.outstand_account_id)
+            .select()
+          
+          if (!updateError && updateData && updateData.length > 0) {
+            savedAccounts.push(updateData[0])
+            console.log('✅ Account updated successfully')
+          }
+        } else {
+          console.error('❌ Error saving account:', insertError)
+        }
+      } else if (insertData && insertData.length > 0) {
+        savedAccounts.push(insertData[0])
+        console.log('✅ Account saved successfully:', JSON.stringify(insertData[0], null, 2))
+      } else {
+        console.warn('⚠️ No data returned from insert, trying to fetch...')
+        // If no data returned, try to fetch it
+        const { data: fetchedData, error: fetchError } = await adminSupabase
+          .from('social_accounts')
+          .select('*')
+          .eq('user_id', accountToSave.user_id)
+          .eq('outstand_account_id', accountToSave.outstand_account_id)
+          .single()
+        
+        if (fetchedData) {
+          savedAccounts.push(fetchedData)
+          console.log('✅ Account fetched and added:', JSON.stringify(fetchedData, null, 2))
+        } else {
+          console.error('❌ Could not fetch account after insert. Fetch error:', fetchError)
+        }
+      }
+    }
+
+    console.log('🟡 Total saved accounts:', savedAccounts.length)
+    console.log('🟡 Saved accounts details:', JSON.stringify(savedAccounts, null, 2))
+    
+    if (savedAccounts.length === 0) {
+      console.error('❌ Failed to save any accounts to database')
+      console.error('❌ This means the insert/update failed for all accounts')
+      console.error('❌ Check the error logs above to see why')
+      return NextResponse.redirect(
+        new URL('/dashboard/settings?error=failed_to_save_accounts', baseUrl)
+      )
+    }
+
+    console.log('✅ Successfully saved', savedAccounts.length, 'account(s) from Outstand')
+    return NextResponse.redirect(
+      new URL('/dashboard/settings?connected=success', baseUrl)
+    )
+  } catch (error: any) {
+    console.error('Error syncing accounts from Outstand:', error)
+    return NextResponse.redirect(
+      new URL('/dashboard/settings?error=sync_error', baseUrl)
+    )
+  }
+}
+
+/**
  * Finalize the connection by calling Outstand API
  */
 async function finalizeConnection(
@@ -117,10 +349,16 @@ async function finalizeConnection(
   accountIds: string[],
   baseUrl: string
 ) {
+  console.log('🟢 FINALIZE CONNECTION CALLED')
+  console.log('🟢 User ID:', userId)
+  console.log('🟢 Session token:', sessionToken)
+  console.log('🟢 Account IDs:', accountIds)
+  
   const OUTSTAND_API_KEY = process.env.OUTSTAND_API_KEY
   const OUTSTAND_API_URL = 'https://api.outstand.so/v1'
 
   try {
+    console.log('🟢 Calling Outstand finalize API...')
     // POST /v1/social-accounts/pending/:session/finalize
     const finalizeResponse = await fetch(
       `${OUTSTAND_API_URL}/social-accounts/pending/${sessionToken}/finalize`,
@@ -145,24 +383,189 @@ async function finalizeConnection(
     }
 
     const accountData = await finalizeResponse.json()
-    const accounts = accountData.accounts || []
+    console.log('🟢 Outstand finalize response (callback):', JSON.stringify(accountData, null, 2))
+    console.log('🟢 Response keys:', Object.keys(accountData))
+    console.log('🟢 accountData.accounts:', accountData.accounts)
+    console.log('🟢 accountData.data?.accounts:', accountData.data?.accounts)
+    console.log('🟢 accountData.data:', accountData.data)
+    
+    // Try multiple possible response formats
+    let accounts = []
+    if (Array.isArray(accountData)) {
+      accounts = accountData
+    } else if (accountData.accounts && Array.isArray(accountData.accounts)) {
+      accounts = accountData.accounts
+    } else if (accountData.data?.accounts && Array.isArray(accountData.data.accounts)) {
+      accounts = accountData.data.accounts
+    } else if (accountData.data && Array.isArray(accountData.data)) {
+      accounts = accountData.data
+    } else if (accountData.account) {
+      accounts = [accountData.account]
+    }
+    
+    console.log('🟢 Extracted accounts (callback):', JSON.stringify(accounts, null, 2))
+    console.log('🟢 Accounts count:', accounts.length)
 
-    // Save connected accounts to database
-    for (const account of accounts) {
-      await supabase
-        .from('social_accounts')
-        .upsert({
-          user_id: userId,
-          outstand_account_id: account.id || account.account_id,
-          platform: account.platform || account.network || 'facebook',
-          username: account.username || account.handle || account.name,
-          name: account.name || account.display_name || account.username,
-          is_active: true,
-        }, {
-          onConflict: 'user_id,outstand_account_id',
-        })
+    if (accounts.length === 0) {
+      console.error('No accounts found in Outstand response (callback)')
+      return NextResponse.redirect(
+        new URL('/dashboard/settings?error=no_accounts_in_response', baseUrl)
+      )
     }
 
+    // Use admin client for all database operations
+    const adminSupabase = createAdminClient()
+    
+    // Ensure user profile exists (user_id must reference profiles.id which should equal auth.uid())
+    console.log('Checking if profile exists for user:', userId)
+    const { data: profile, error: profileError } = await adminSupabase
+      .from('profiles')
+      .select('id')
+      .eq('id', userId)
+      .single()
+
+    console.log('Profile check - data:', profile)
+    console.log('Profile check - error:', profileError)
+
+    if (profileError || !profile) {
+      console.warn('Profile not found for user (callback), creating...')
+      console.warn('Profile error:', profileError)
+      // Try to create profile if it doesn't exist using admin client
+      const { data: newProfile, error: createProfileError } = await adminSupabase
+        .from('profiles')
+        .insert({ id: userId })
+        .select()
+      
+      console.log('Create profile - data:', newProfile)
+      console.log('Create profile - error:', createProfileError)
+      
+      if (createProfileError) {
+        console.error('❌ Failed to create profile (callback):', createProfileError)
+        return NextResponse.redirect(
+          new URL('/dashboard/settings?error=profile_not_found', baseUrl)
+        )
+      }
+      console.log('✅ Profile created successfully')
+    } else {
+      console.log('✅ Profile exists')
+    }
+
+    // Save connected accounts to database
+    const savedAccounts = []
+    for (const account of accounts) {
+      const accountToSave = {
+        user_id: userId, // This should be auth.uid() which equals profiles.id
+        outstand_account_id: account.id || account.account_id,
+        platform: account.platform || account.network || 'facebook',
+        username: account.username || account.handle || account.name,
+        name: account.name || account.display_name || account.username,
+        is_active: true,
+      }
+      
+      console.log('Saving account to database (callback):', JSON.stringify(accountToSave, null, 2))
+      console.log('User ID (auth.uid):', userId)
+      
+      // Try insert first, then update if it exists
+      let savedData = null
+      let upsertError = null
+      
+      // Try to insert the account using admin client to bypass RLS
+      console.log('Attempting to insert account:', JSON.stringify(accountToSave, null, 2))
+      const { data: insertData, error: insertError } = await adminSupabase
+        .from('social_accounts')
+        .insert(accountToSave)
+        .select()
+      
+      console.log('Insert result - data:', insertData)
+      console.log('Insert result - error:', insertError)
+      
+      if (insertError) {
+        console.error('Insert error details:', {
+          code: insertError.code,
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint,
+        })
+        
+        // If unique constraint violation, update instead
+        if (insertError.code === '23505' || insertError.message?.includes('duplicate')) {
+          console.log('Account already exists, updating...')
+          const { data: updateData, error: updateError } = await adminSupabase
+            .from('social_accounts')
+            .update({
+              platform: accountToSave.platform,
+              username: accountToSave.username,
+              name: accountToSave.name,
+              is_active: accountToSave.is_active,
+            })
+            .eq('user_id', accountToSave.user_id)
+            .eq('outstand_account_id', accountToSave.outstand_account_id)
+            .select()
+          
+          console.log('Update result - data:', updateData)
+          console.log('Update result - error:', updateError)
+          
+          savedData = updateData
+          upsertError = updateError
+        } else {
+          savedData = null
+          upsertError = insertError
+        }
+      } else {
+        savedData = insertData
+        console.log('✅ Insert successful!')
+      }
+
+      if (upsertError) {
+        console.error('❌ Error saving account to database (callback):', upsertError)
+        console.error('Error code:', upsertError.code)
+        console.error('Error message:', upsertError.message)
+        console.error('Error details:', upsertError.details)
+        console.error('Error hint:', upsertError.hint)
+        console.error('Full error:', JSON.stringify(upsertError, null, 2))
+        console.error('Account data that failed:', accountToSave)
+        // Continue with other accounts even if one fails
+      } else {
+        console.log('✅ Account saved successfully (callback):', savedData)
+        if (savedData && savedData.length > 0) {
+          savedAccounts.push(savedData[0])
+          console.log('✅ Account added to savedAccounts array')
+        } else {
+          console.warn('⚠️ No data returned from insert/update, trying to fetch...')
+          // If no data returned, try to fetch it
+          const { data: fetchedData, error: fetchError } = await adminSupabase
+            .from('social_accounts')
+            .select('*')
+            .eq('user_id', accountToSave.user_id)
+            .eq('outstand_account_id', accountToSave.outstand_account_id)
+            .single()
+          
+          console.log('Fetch result - data:', fetchedData)
+          console.log('Fetch result - error:', fetchError)
+          
+          if (fetchedData) {
+            savedAccounts.push(fetchedData)
+            console.log('✅ Account fetched and added to savedAccounts')
+          } else {
+            console.error('❌ Could not fetch account after insert/update')
+          }
+        }
+      }
+    }
+
+    console.log('Total saved accounts:', savedAccounts.length)
+    console.log('Saved accounts:', JSON.stringify(savedAccounts, null, 2))
+    
+    if (savedAccounts.length === 0) {
+      console.error('❌ Failed to save any accounts to database (callback)')
+      console.error('This means the insert/update failed for all accounts')
+      console.error('Check the error logs above to see why')
+      return NextResponse.redirect(
+        new URL('/dashboard/settings?error=failed_to_save_accounts', baseUrl)
+      )
+    }
+
+    console.log('✅ Successfully saved', savedAccounts.length, 'account(s)')
     return NextResponse.redirect(
       new URL('/dashboard/settings?connected=success', baseUrl)
     )

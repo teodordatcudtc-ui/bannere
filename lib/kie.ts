@@ -48,7 +48,7 @@ export async function createImageGenerationTask(
     callBackUrl: callbackUrl,
     input: {
       prompt: input.prompt,
-      output_format: input.output_format || 'png',
+      output_format: input.output_format || 'jpg', // Default to JPEG for better platform compatibility
       aspect_ratio: input.aspect_ratio || '16:9', // Good for banners
       num_images: input.num_images || 1,
     },
@@ -229,7 +229,7 @@ export async function generateImageVariants(
       const task = await createImageGenerationTask({
         prompt,
         aspect_ratio: aspectRatio,
-        output_format: 'png',
+        output_format: 'jpg', // Use JPEG for better compatibility (TikTok, Instagram, etc.)
         num_images: 1,
         image_urls: referenceImages,
       })

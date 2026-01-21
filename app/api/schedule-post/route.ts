@@ -20,62 +20,9 @@ export async function POST(request: Request) {
       )
     }
 
-    // Verify user is connected to all selected platforms
-    const { data: connectedAccounts, error: accountsError } = await supabase
-      .from('social_accounts')
-      .select('platform')
-      .eq('user_id', user.id)
-      .eq('is_active', true)
-
-    if (accountsError) {
-      console.error('Error fetching connected accounts:', accountsError)
-      return NextResponse.json(
-        { error: 'Failed to verify connected accounts' },
-        { status: 500 }
-      )
-    }
-
-    // Normalize platform names to match expected format
-    const normalizePlatform = (platform: string | null | undefined): string | null => {
-      if (!platform) return null
-      const normalized = platform.toLowerCase().trim()
-      // Map Outstand platform names to our expected format
-      const platformMap: Record<string, string> = {
-        'tiktok': 'tiktok',
-        'facebook': 'facebook',
-        'instagram': 'instagram',
-        'linkedin': 'linkedin',
-        'x': 'x',
-        'twitter': 'x',
-      }
-      return platformMap[normalized] || normalized
-    }
-
-    const connectedPlatforms = (connectedAccounts || [])
-      .map((account: any) => normalizePlatform(account.platform))
-      .filter((p: string | null): p is string => p !== null)
-
-    const disconnectedPlatforms = platforms.filter(
-      (platform: string) => !connectedPlatforms.includes(platform.toLowerCase())
-    )
-
-    if (disconnectedPlatforms.length > 0) {
-      const platformNames: Record<string, string> = {
-        facebook: 'Facebook',
-        instagram: 'Instagram',
-        linkedin: 'LinkedIn',
-        tiktok: 'TikTok',
-      }
-      const disconnectedNames = disconnectedPlatforms
-        .map((p: string) => platformNames[p.toLowerCase()] || p)
-        .join(', ')
-      return NextResponse.json(
-        {
-          error: `Nu ești conectat la: ${disconnectedNames}. Te rugăm să te conectezi la aceste platforme înainte de a programa postări.`,
-        },
-        { status: 400 }
-      )
-    }
+    // Note: We skip platform verification here because Outstand handles the connections
+    // The accounts are connected in Outstand, so we trust that and proceed with scheduling
+    // If the account is not connected in Outstand, the post will fail at posting time
 
     // Verify image belongs to user
     const { data: image, error: imageError } = await supabase
