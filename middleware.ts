@@ -5,7 +5,7 @@ import { Locale } from './lib/i18n'
 
 export async function middleware(request: NextRequest) {
   // Detect locale from geolocation
-  const locale = detectLocaleFromRequest(request)
+  const { locale, shouldUpdate } = detectLocaleFromRequest(request)
   
   // Create response
   let response = NextResponse.next({
@@ -14,8 +14,8 @@ export async function middleware(request: NextRequest) {
     },
   })
 
-  // Set locale cookie if not already set
-  if (!request.cookies.get('NEXT_LOCALE')) {
+  // Set or update locale cookie if needed
+  if (shouldUpdate || !request.cookies.get('NEXT_LOCALE')) {
     response.cookies.set('NEXT_LOCALE', locale, {
       path: '/',
       maxAge: 60 * 60 * 24 * 365, // 1 year

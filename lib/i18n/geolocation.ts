@@ -5,13 +5,7 @@ import { Locale } from './index'
  * Detects user's country from request headers
  * Uses Vercel's geolocation headers if available, otherwise falls back to Accept-Language
  */
-export function detectLocaleFromRequest(request: NextRequest): Locale {
-  // Check if locale is already set in cookie
-  const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value
-  if (cookieLocale === 'ro' || cookieLocale === 'en') {
-    return cookieLocale
-  }
-
+export function detectLocaleFromRequest(request: NextRequest): { locale: Locale; shouldUpdate: boolean } {
   // Try to get country from geolocation headers
   // Vercel provides: x-vercel-ip-country
   // Cloudflare provides: cf-ipcountry
@@ -21,22 +15,36 @@ export function detectLocaleFromRequest(request: NextRequest): Locale {
                   request.headers.get('x-country-code') ||
                   null
 
-  // If country is Romania, return Romanian
+  // Determine locale based on country
+  let detectedLocale: Locale = 'en'
+  
   if (country === 'RO') {
-    return 'ro'
-  }
-
-  // Try Accept-Language header as fallback
-  const acceptLanguage = request.headers.get('accept-language')
-  if (acceptLanguage) {
-    // Check if Romanian is preferred
-    if (acceptLanguage.toLowerCase().includes('ro')) {
-      return 'ro'
+    detectedLocale = 'ro'
+  } else if (country) {
+    // If we have a country but it's not RO, use English
+    detectedLocale = 'en'
+  } else {
+    // No country header available, try Accept-Language header as fallback
+    const acceptLanguage = request.headers.get('accept-language')
+    if (acceptLanguage && acceptLanguage.toLowerCase().includes('ro')) {
+      detectedLocale = 'ro'
     }
   }
 
-  // Default to English for all other countries
-  return 'en'
+  // Check if locale is already set in cookie
+  const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value as Locale | undefined
+  
+  // Always check if we should update (in case country changed via VPN)
+  // But only update if we have a valid country detection
+  if (cookieLocale === 'ro' || cookieLocale === 'en') {
+    // If we detected a country and it differs from cookie, update it
+    // If no country detected, keep the cookie
+    const shouldUpdate = country !== null && cookieLocale !== detectedLocale
+    return { locale: shouldUpdate ? detectedLocale : cookieLocale, shouldUpdate }
+  }
+
+  // No cookie or invalid cookie, use detected locale
+  return { locale: detectedLocale, shouldUpdate: true }
 }
 
 /**

@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n/context";
 import { Locale } from "@/lib/i18n";
+import { LocaleDetector } from "@/components/locale-detector";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -34,6 +35,7 @@ export default async function RootLayout({
         className={`${inter.variable} font-sans antialiased`}
       >
         <I18nProvider initialLocale={locale}>
+          <LocaleDetector />
           {children}
         </I18nProvider>
       </body>
