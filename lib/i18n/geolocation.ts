@@ -12,10 +12,14 @@ export function detectLocaleFromRequest(request: NextRequest): Locale {
     return cookieLocale
   }
 
-  // Try to get country from Vercel's geolocation headers (if deployed on Vercel)
-  const country = request.geo?.country || 
-                  request.headers.get('x-vercel-ip-country') ||
-                  request.headers.get('cf-ipcountry') // Cloudflare
+  // Try to get country from geolocation headers
+  // Vercel provides: x-vercel-ip-country
+  // Cloudflare provides: cf-ipcountry
+  // Other providers might use: x-country-code
+  const country = request.headers.get('x-vercel-ip-country') ||
+                  request.headers.get('cf-ipcountry') ||
+                  request.headers.get('x-country-code') ||
+                  null
 
   // If country is Romania, return Romanian
   if (country === 'RO') {
@@ -39,8 +43,8 @@ export function detectLocaleFromRequest(request: NextRequest): Locale {
  * Gets user's country code from request
  */
 export function getCountryFromRequest(request: NextRequest): string | null {
-  return request.geo?.country || 
-         request.headers.get('x-vercel-ip-country') ||
+  return request.headers.get('x-vercel-ip-country') ||
          request.headers.get('cf-ipcountry') ||
+         request.headers.get('x-country-code') ||
          null
 }
