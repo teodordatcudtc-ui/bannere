@@ -11,7 +11,8 @@
     "submit": "Submit",
     "search": "Search",
     "filter": "Filter",
-    "close": "Close"
+    "close": "Close",
+    "error": "Error"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -55,6 +56,9 @@
     "noRecentActivity": "No recent activity",
     "noImages": "You haven't generated any images yet",
     "generateFirstBanner": "Generate your first banner",
+    "postPublished": "Post published",
+    "postScheduled": "Post scheduled",
+    "postFailed": "Post failed",
     "generateBanners": "Generate banners",
     "createBanners": "Create new banners with AI using your brand kit",
     "schedulePosts": "Schedule posts",

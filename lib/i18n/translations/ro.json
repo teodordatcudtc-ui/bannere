@@ -11,7 +11,8 @@
     "submit": "Trimite",
     "search": "Caută",
     "filter": "Filtrează",
-    "close": "Închide"
+    "close": "Închide",
+    "error": "Eroare"
   },
   "nav": {
     "dashboard": "Panou de control",
@@ -55,6 +56,9 @@
     "noRecentActivity": "Nu există activitate recentă",
     "noImages": "Nu ai generat încă imagini",
     "generateFirstBanner": "Generează primul tău banner",
+    "postPublished": "Postare publicată",
+    "postScheduled": "Postare programată",
+    "postFailed": "Postare eșuată",
     "generateBanners": "Generează bannere",
     "createBanners": "Creează bannere noi cu AI folosind brand kit-ul tău",
     "schedulePosts": "Programează postări",

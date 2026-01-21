@@ -10,8 +10,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Upload, Facebook, Instagram, Linkedin, Music, Check, X as XIcon, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { useI18n } from '@/lib/i18n/context'
 
 export default function SettingsPage() {
+  const { t } = useI18n()
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [primaryColor, setPrimaryColor] = useState('#000000')
@@ -148,7 +150,7 @@ export default function SettingsPage() {
   }
 
   const handleDisconnectAccount = async (accountId: string) => {
-    if (!confirm('Ești sigur că vrei să deconectezi acest cont?')) {
+    if (!confirm(t('settings.disconnectConfirm'))) {
       return
     }
 
@@ -229,17 +231,17 @@ export default function SettingsPage() {
   return (
     <div className="space-y-7">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Setări</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('settings.title')}</h1>
         <p className="text-base text-gray-600">
-          Gestionează brand kit-ul și setările contului
+          {t('settings.subtitle')}
         </p>
       </div>
 
       <Card className="border-0 bg-white rounded-2xl shadow-sm">
         <CardHeader className="p-6">
-          <CardTitle className="text-xl font-bold text-gray-900 mb-2">Brand Kit</CardTitle>
+          <CardTitle className="text-xl font-bold text-gray-900 mb-2">{t('settings.brandKit')}</CardTitle>
           <CardDescription className="text-sm text-gray-600">
-            Actualizează setările identității tale de brand
+            {t('settings.updateBrandIdentity')}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6 pt-0">
@@ -251,12 +253,12 @@ export default function SettingsPage() {
             )}
             {success && (
               <div className="p-4 text-sm text-green-600 bg-green-50 rounded-lg border border-green-200">
-                Brand kit actualizat cu succes!
+                {t('settings.brandKitUpdated')}
               </div>
             )}
 
             <div className="space-y-2">
-              <Label className="text-sm font-semibold text-gray-900">Logo</Label>
+              <Label className="text-sm font-semibold text-gray-900">{t('settings.logo')}</Label>
               <div className="flex items-center gap-4">
                 <input
                   type="file"
@@ -272,7 +274,7 @@ export default function SettingsPage() {
                   onClick={() => document.getElementById('logo-upload')?.click()}
                 >
                   <Upload className="mr-2 h-4 w-4" />
-                  {logoFile ? 'Schimbă logo' : 'Încarcă logo'}
+                  {logoFile ? t('settings.changeLogo') : t('settings.uploadLogo')}
                 </Button>
                 {logoPreview && (
                   <img
@@ -286,7 +288,7 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="primaryColor" className="text-sm font-semibold text-gray-900">Culoare principală</Label>
+                <Label htmlFor="primaryColor" className="text-sm font-semibold text-gray-900">{t('settings.primaryColor')}</Label>
                 <div className="flex gap-2">
                   <Input
                     id="primaryColor"
@@ -306,7 +308,7 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="secondaryColor" className="text-sm font-semibold text-gray-900">Culoare secundară</Label>
+                <Label htmlFor="secondaryColor" className="text-sm font-semibold text-gray-900">{t('settings.secondaryColor')}</Label>
                 <div className="flex gap-2">
                   <Input
                     id="secondaryColor"
@@ -328,10 +330,10 @@ export default function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="businessDescription" className="text-sm font-semibold text-gray-900">Descriere business</Label>
+              <Label htmlFor="businessDescription" className="text-sm font-semibold text-gray-900">{t('settings.businessDescription')}</Label>
               <Textarea
                 id="businessDescription"
-                placeholder="Descrie business-ul tău, produsele și publicul țintă..."
+                placeholder={t('settings.businessDescriptionPlaceholder')}
                 value={businessDescription}
                 onChange={(e) => setBusinessDescription(e.target.value)}
                 rows={4}
@@ -340,7 +342,7 @@ export default function SettingsPage() {
             </div>
 
             <Button type="submit" className="text-sm py-5" disabled={loading}>
-              {loading ? 'Se salvează...' : 'Salvează modificările'}
+              {loading ? t('settings.saving') : t('settings.saveChanges')}
             </Button>
           </form>
         </CardContent>
@@ -349,24 +351,21 @@ export default function SettingsPage() {
       {/* Social Media Accounts */}
       <Card className="border-0 bg-white rounded-2xl shadow-sm">
         <CardHeader className="p-6">
-          <CardTitle className="text-xl font-bold text-gray-900 mb-2">Conturi Social Media</CardTitle>
+          <CardTitle className="text-xl font-bold text-gray-900 mb-2">{t('settings.socialAccounts')}</CardTitle>
           <CardDescription className="text-sm text-gray-600">
-            Conectează conturile tale de social media pentru a programa postări automat
+            {t('settings.connectAccounts')}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6 pt-0">
           {error && (
             <div className="p-4 text-sm text-red-600 bg-red-50 rounded-lg border border-red-200 mb-4">
-              <p className="font-semibold mb-1">Eroare:</p>
+              <p className="font-semibold mb-1">{t('common.error')}:</p>
               <p>{error}</p>
-              <p className="text-xs mt-2 text-red-500">
-                Verifică consola browser-ului (F12) pentru detalii suplimentare.
-              </p>
             </div>
           )}
           {success && (
             <div className="p-4 text-sm text-green-600 bg-green-50 rounded-lg border border-green-200 mb-4">
-              Cont conectat cu succes!
+              {t('settings.accountConnected')}
             </div>
           )}
 
@@ -390,7 +389,7 @@ export default function SettingsPage() {
                       </p>
                       {connectedAccount && (
                         <p className="text-xs text-gray-500">
-                          {connectedAccount.username || connectedAccount.name || 'Conectat'}
+                          {connectedAccount.username || connectedAccount.name || t('settings.connected')}
                         </p>
                       )}
                     </div>
@@ -399,7 +398,7 @@ export default function SettingsPage() {
                     <div className="flex items-center gap-2">
                       <Badge variant="default" className="bg-green-500">
                         <Check className="h-3 w-3 mr-1" />
-                        Conectat
+                        {t('settings.connected')}
                       </Badge>
                       <Button
                         variant="outline"
@@ -407,7 +406,7 @@ export default function SettingsPage() {
                         onClick={() => handleDisconnectAccount(connectedAccount.id)}
                         className="text-xs"
                       >
-                        Deconectează
+                        {t('settings.disconnect')}
                       </Button>
                     </div>
                   ) : (
@@ -421,10 +420,10 @@ export default function SettingsPage() {
                       {connectingPlatform === platform ? (
                         <>
                           <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                          Se conectează...
+                          {t('settings.connecting')}
                         </>
                       ) : (
-                        'Conectează'
+                        t('settings.connect')
                       )}
                     </Button>
                   )}
@@ -435,8 +434,7 @@ export default function SettingsPage() {
 
           <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
             <p className="text-xs text-blue-800">
-              <strong>Notă:</strong> Pentru a conecta conturile, trebuie să configurezi mai întâi credențialele OAuth în Outstand dashboard.
-              Contactează administratorul pentru asistență.
+              {t('settings.oauthNote')}
             </p>
           </div>
         </CardContent>

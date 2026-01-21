@@ -12,8 +12,10 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Loader2, Sparkles, X, Type, Palette, Maximize2, Hash, Image as ImageIcon, FileText, Zap } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useI18n } from '@/lib/i18n/context'
 
 export default function PlaygroundPage() {
+  const { t } = useI18n()
   const [bannerText, setBannerText] = useState('')
   const [theme, setTheme] = useState('')
   const [variantCount, setVariantCount] = useState('5')
@@ -216,9 +218,9 @@ export default function PlaygroundPage() {
   return (
     <div className="space-y-7">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Playground</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('playground.title')}</h1>
         <p className="text-base text-gray-600">
-          Generează bannere cu AI folosind identitatea ta de brand
+          {t('playground.subtitle')}
         </p>
       </div>
 
@@ -226,9 +228,9 @@ export default function PlaygroundPage() {
         {/* Generation Form */}
         <Card className="border-0 bg-white rounded-2xl shadow-sm">
           <CardHeader className="p-8 pb-6">
-            <CardTitle className="text-2xl font-bold text-gray-900 mb-3">Generează bannere</CardTitle>
+            <CardTitle className="text-2xl font-bold text-gray-900 mb-3">{t('playground.title')}</CardTitle>
             <CardDescription className="text-base text-gray-600">
-              Creează bannere profesionale cu AI în câteva secunde
+              {t('playground.subtitle')}
             </CardDescription>
           </CardHeader>
           <CardContent className="p-8 pt-0">
@@ -463,12 +465,12 @@ export default function PlaygroundPage() {
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Se generează...
+                    {t('playground.generating')}
                   </>
                 ) : (
                   <>
                     <Sparkles className="mr-2 h-5 w-5" />
-                    Generează bannere
+                    {t('playground.generate')}
                   </>
                 )}
               </Button>
@@ -479,9 +481,9 @@ export default function PlaygroundPage() {
         {/* Generated Images */}
         <div className="space-y-5">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-900">Imagini generate</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{t('playground.generatedImages')}</h2>
             {generatedImages.length > 0 && (
-              <Badge className="text-sm px-3 py-1">{generatedImages.length} imagini</Badge>
+              <Badge className="text-sm px-3 py-1">{generatedImages.length} {t('playground.images')}</Badge>
             )}
           </div>
 
@@ -500,7 +502,7 @@ export default function PlaygroundPage() {
                   <Sparkles className="h-8 w-8 text-[#8B7CFF]" />
                 </div>
                 <p className="text-base text-gray-600 text-center">
-                  Imaginile generate vor apărea aici
+                  {t('playground.noImages')}
                 </p>
               </CardContent>
             </Card>

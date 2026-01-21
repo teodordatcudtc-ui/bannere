@@ -16,6 +16,7 @@ import {
   CreditCard
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
+import { useI18n } from '@/lib/i18n/context'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -27,6 +28,7 @@ export function DashboardLayout({ children, credits = 0 }: DashboardLayoutProps)
   const pathname = usePathname()
   const supabase = createClient()
   const [user, setUser] = useState<any>(null)
+  const { t } = useI18n()
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }: { data: { user: any } }) => {
@@ -44,11 +46,11 @@ export function DashboardLayout({ children, credits = 0 }: DashboardLayoutProps)
   }
 
   const navItems = [
-    { href: '/dashboard', label: 'Panou de control', icon: LayoutDashboard },
-    { href: '/dashboard/playground', label: 'Playground', icon: Sparkles },
-    { href: '/dashboard/schedule', label: 'Programare', icon: Calendar },
-    { href: '/dashboard/calendar', label: 'Calendar', icon: CalendarDays },
-    { href: '/dashboard/settings', label: 'Setări', icon: Settings },
+    { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { href: '/dashboard/playground', label: t('nav.playground'), icon: Sparkles },
+    { href: '/dashboard/schedule', label: t('nav.schedule'), icon: Calendar },
+    { href: '/dashboard/calendar', label: t('nav.calendar'), icon: CalendarDays },
+    { href: '/dashboard/settings', label: t('nav.settings'), icon: Settings },
   ]
 
   return (
@@ -95,7 +97,7 @@ export function DashboardLayout({ children, credits = 0 }: DashboardLayoutProps)
             className="w-full px-5 py-3 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3 text-sm font-medium"
           >
             <LogOut className="h-5 w-5" />
-            <span>Deconectare</span>
+            <span>{t('nav.logout')}</span>
           </button>
         </div>
       </aside>
@@ -106,19 +108,19 @@ export function DashboardLayout({ children, credits = 0 }: DashboardLayoutProps)
         <header className="bg-white/80 backdrop-blur-sm border-b border-white/50 px-7 py-5 sticky top-0 z-10 shadow-sm">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Bun venit{user?.email ? `, ${user.email.split('@')[0]}` : ''}</h2>
+              <h2 className="text-xl font-semibold text-gray-900">{t('common.welcome')}{user?.email ? `, ${user.email.split('@')[0]}` : ''}</h2>
             </div>
             <div className="flex items-center gap-5">
               <div className="flex items-center gap-2.5 px-4 py-2 bg-gradient-to-r from-[#E9D5FF] to-[#C4B5FD] rounded-lg">
                 <CreditCard className="h-4 w-4 text-[#8B7CFF]" />
-                <span className="text-sm text-gray-700 font-semibold">Credite:</span>
+                <span className="text-sm text-gray-700 font-semibold">{t('dashboard.credits')}:</span>
                 <Badge className="bg-white text-[#8B7CFF] text-sm font-bold px-2.5 py-1 border border-[#8B7CFF]/20">
                   {credits}
                 </Badge>
               </div>
               <Link href="/dashboard/subscribe">
                 <Button className="bg-gradient-to-r from-[#8B7CFF] to-[#A78BFA] hover:from-[#7C6EE6] hover:to-[#9678E9] text-white text-sm px-5">
-                  Actualizează
+                  {t('dashboard.update')}
                 </Button>
               </Link>
             </div>
