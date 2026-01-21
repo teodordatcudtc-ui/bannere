@@ -102,7 +102,7 @@ export default function SchedulePage() {
 
     if (data) {
       // Get unique platforms
-      const uniquePlatforms = [...new Set(data.map((account: any) => account.platform.toLowerCase()))]
+      const uniquePlatforms: string[] = [...new Set<string>(data.map((account: any) => account.platform.toLowerCase() as string))]
       setConnectedPlatforms(uniquePlatforms)
     }
   }
@@ -141,7 +141,7 @@ export default function SchedulePage() {
 
       // Check if user is connected to all selected platforms
       const disconnectedPlatforms = platforms.filter(
-        (platform) => !connectedPlatforms.includes(platform.toLowerCase())
+        (platform: string) => !connectedPlatforms.includes(platform.toLowerCase())
       )
 
       if (disconnectedPlatforms.length > 0) {
@@ -152,7 +152,7 @@ export default function SchedulePage() {
           tiktok: 'TikTok',
         }
         const disconnectedNames = disconnectedPlatforms
-          .map((p) => platformNames[p.toLowerCase()] || p)
+          .map((p: string) => platformNames[p.toLowerCase()] || p)
           .join(', ')
         setError(
           `Nu ești conectat la: ${disconnectedNames}. Te rugăm să te conectezi la aceste platforme în Settings înainte de a programa postări.`

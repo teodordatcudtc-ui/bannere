@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     )
 
     const disconnectedPlatforms = platforms.filter(
-      (platform) => !connectedPlatforms.includes(platform.toLowerCase())
+      (platform: string) => !connectedPlatforms.includes(platform.toLowerCase())
     )
 
     if (disconnectedPlatforms.length > 0) {
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
         tiktok: 'TikTok',
       }
       const disconnectedNames = disconnectedPlatforms
-        .map((p) => platformNames[p.toLowerCase()] || p)
+        .map((p: string) => platformNames[p.toLowerCase()] || p)
         .join(', ')
       return NextResponse.json(
         {
