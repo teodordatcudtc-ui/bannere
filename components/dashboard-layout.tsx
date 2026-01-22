@@ -158,6 +158,26 @@ export function DashboardLayout({ children, credits = 0 }: DashboardLayoutProps)
               </Link>
             )
           })}
+          {/* Subscribe link - only visible on mobile */}
+          <Link 
+            href="/dashboard/subscribe"
+            prefetch={true}
+            className="block"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <div
+              className={`
+                w-full px-5 py-3 rounded-xl transition-all flex items-center gap-3 text-sm font-medium
+                ${pathname === '/dashboard/subscribe' || pathname.startsWith('/dashboard/subscribe/')
+                  ? 'bg-gradient-to-r from-[#8B7CFF] to-[#A78BFA] text-white shadow-sm' 
+                  : 'text-gray-700 hover:bg-gray-100 bg-gradient-to-r from-[#8B7CFF]/10 to-[#A78BFA]/10 hover:from-[#8B7CFF]/20 hover:to-[#A78BFA]/20'
+                }
+              `}
+            >
+              <CreditCard className="h-5 w-5" />
+              <span>Cumpără credite</span>
+            </div>
+          </Link>
         </nav>
         <div className="p-5 border-t border-gray-100">
           <button
