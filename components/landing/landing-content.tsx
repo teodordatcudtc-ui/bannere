@@ -298,10 +298,23 @@ export function LandingContent({ user }: LandingContentProps) {
                   <span className="text-5xl font-bold text-gray-900">{t('landing.pricing.starter.price')}</span>
                   <span className="text-gray-600 text-lg">{t('landing.pricing.month')}</span>
                 </div>
-                <div className="mb-6">
+                <div className="mb-4">
                   <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 text-sm font-semibold rounded-full">
                     {t('landing.pricing.starter.credits')}
                   </span>
+                </div>
+                {/* Usage info */}
+                <div className="bg-gradient-to-br from-[#F0F4FF] to-[#E8EDFF] rounded-xl p-3 mb-6 border border-[#8B7CFF]/20">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs md:text-sm text-gray-700 font-medium">Bannere:</span>
+                      <span className="text-base md:text-lg font-bold text-[#8B7CFF]">100</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs md:text-sm text-gray-700 font-medium">Postări:</span>
+                      <span className="text-base md:text-lg font-bold text-[#8B7CFF]">20</span>
+                    </div>
+                  </div>
                 </div>
                 <ul className="space-y-3 text-sm mb-8">
                   <li className="flex items-start gap-2">
@@ -340,10 +353,23 @@ export function LandingContent({ user }: LandingContentProps) {
                   <span className="text-5xl font-bold text-gray-900">{t('landing.pricing.growth.price')}</span>
                   <span className="text-gray-600 text-lg">{t('landing.pricing.month')}</span>
                 </div>
-                <div className="mb-6">
+                <div className="mb-4">
                   <span className="inline-block px-3 py-1 bg-gradient-to-r from-[#8B7CFF] to-[#A78BFA] text-white text-sm font-semibold rounded-full">
                     {t('landing.pricing.growth.credits')}
                   </span>
+                </div>
+                {/* Usage info */}
+                <div className="bg-gradient-to-br from-[#8B7CFF]/10 to-[#A78BFA]/10 rounded-xl p-3 mb-6 border border-[#8B7CFF]/30">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs md:text-sm text-gray-700 font-medium">Bannere:</span>
+                      <span className="text-base md:text-lg font-bold text-[#8B7CFF]">300</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs md:text-sm text-gray-700 font-medium">Postări:</span>
+                      <span className="text-base md:text-lg font-bold text-[#8B7CFF]">60</span>
+                    </div>
+                  </div>
                 </div>
                 <ul className="space-y-3 text-sm mb-8">
                   <li className="flex items-start gap-2">
@@ -377,10 +403,23 @@ export function LandingContent({ user }: LandingContentProps) {
                   <span className="text-5xl font-bold text-gray-900">{t('landing.pricing.agency.price')}</span>
                   <span className="text-gray-600 text-lg">{t('landing.pricing.month')}</span>
                 </div>
-                <div className="mb-6">
+                <div className="mb-4">
                   <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 text-sm font-semibold rounded-full">
                     {t('landing.pricing.agency.credits')}
                   </span>
+                </div>
+                {/* Usage info */}
+                <div className="bg-gradient-to-br from-[#F0F4FF] to-[#E8EDFF] rounded-xl p-3 mb-6 border border-[#8B7CFF]/20">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs md:text-sm text-gray-700 font-medium">Imagini:</span>
+                      <span className="text-base md:text-lg font-bold text-[#8B7CFF]">1000</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs md:text-sm text-gray-700 font-medium">Postări:</span>
+                      <span className="text-base md:text-lg font-bold text-[#8B7CFF]">200</span>
+                    </div>
+                  </div>
                 </div>
                 <ul className="space-y-3 text-sm mb-8">
                   <li className="flex items-start gap-2">

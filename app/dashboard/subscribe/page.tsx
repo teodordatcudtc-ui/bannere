@@ -40,18 +40,27 @@ export default function SubscribePage() {
     {
       id: 'starter',
       ...subscriptionPlans.starter,
-      features: ['100 credite/lună', 'Generare bannere cu AI', 'Configurare brand kit', 'Programare social media'],
+      credits: 100,
+      images: 100,
+      posts: 20,
+      features: ['Generare bannere cu AI', 'Configurare brand kit', 'Programare social media'],
     },
     {
       id: 'growth',
       ...subscriptionPlans.growth,
-      features: ['300 credite/lună', 'Tot ce e în Starter', '3x mai multe credite', 'Suport prioritar'],
+      credits: 300,
+      images: 300,
+      posts: 60,
+      features: ['Tot ce e în Starter', '3x mai multe credite', 'Suport prioritar'],
       popular: true,
     },
     {
       id: 'agency',
       ...subscriptionPlans.agency,
-      features: ['1000 credite/lună', 'Tot ce e în Growth', '10x mai multe credite', 'Opțiuni white-label'],
+      credits: 1000,
+      images: 1000,
+      posts: 200,
+      features: ['Tot ce e în Growth', '10x mai multe credite', 'Opțiuni white-label'],
     },
   ]
 
@@ -83,9 +92,22 @@ export default function SubscribePage() {
                 <span className="text-4xl font-bold text-gray-900">€{plan.price}</span>
                 <span className="text-lg text-gray-600">/lună</span>
               </div>
-              <CardDescription className="text-sm text-gray-600">
+              <CardDescription className="text-sm text-gray-600 mb-4">
                 {plan.credits} credite/lună
               </CardDescription>
+              {/* Usage info */}
+              <div className="bg-gradient-to-br from-[#F0F4FF] to-[#E8EDFF] rounded-xl p-4 border border-[#8B7CFF]/20">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700 font-medium">Bannere generate:</span>
+                    <span className="text-lg font-bold text-[#8B7CFF]">{plan.images}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700 font-medium">Postări programate:</span>
+                    <span className="text-lg font-bold text-[#8B7CFF]">{plan.posts}</span>
+                  </div>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="p-6 pt-0">
               <ul className="space-y-3 text-sm mb-6">
