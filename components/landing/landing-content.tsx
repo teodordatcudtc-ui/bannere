@@ -64,31 +64,34 @@ export function LandingContent({ user }: LandingContentProps) {
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               {/* Left Side - Text Content */}
-              <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-full mb-6">
+              <div className="text-center md:text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-full mb-6 md:inline-flex">
                   <Sparkles className="h-3 w-3 text-purple-600" />
                   <span className="text-xs font-semibold text-purple-700">{t('landing.hero.badge')}</span>
                 </div>
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-[1.1]">
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-[1.1] text-center md:text-left">
                   {t('landing.hero.title')} <span className="text-[#8B7CFF]">{t('landing.hero.titleHighlight')}</span>
                 </h1>
-                <p className="text-base text-gray-600 mb-8 leading-relaxed">
+                <p className="text-base text-gray-600 mb-8 leading-relaxed md:block hidden">
                   {t('landing.hero.description')}
                 </p>
-                <div className="flex gap-4 mb-6">
-                  <Link href="/auth/signup">
-                    <Button size="lg" className="bg-[#8B7CFF] hover:bg-[#7C6EE6] text-white text-base px-8 py-6">
+                <p className="text-base text-gray-600 mb-8 leading-relaxed md:hidden block">
+                  {t('landing.hero.description').split(' ').slice(0, 10).join(' ')}
+                </p>
+                <div className="flex flex-col md:flex-row gap-4 mb-6 items-center md:items-start">
+                  <Link href="/auth/signup" className="w-full md:w-auto">
+                    <Button size="lg" className="bg-[#8B7CFF] hover:bg-[#7C6EE6] text-white text-base px-8 py-6 w-full md:w-auto">
                       {t('landing.hero.startFree')}
                     </Button>
                   </Link>
-                  <Link href="/auth/login">
-                    <Button size="lg" variant="outline" className="text-base px-8 py-6 border-2">
+                  <Link href="/auth/login" className="w-full md:w-auto">
+                    <Button size="lg" variant="outline" className="text-base px-8 py-6 border-2 w-full md:w-auto">
                       <span className="mr-2">▶</span>
                       {t('landing.hero.seeDemo')}
                     </Button>
                   </Link>
                 </div>
-                <p className="text-sm text-gray-500">{t('landing.hero.trial')}</p>
+                <p className="text-sm text-gray-500 text-center md:text-left">{t('landing.hero.trial')}</p>
               </div>
 
               {/* Right Side - Dashboard Preview */}

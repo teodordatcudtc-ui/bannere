@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
@@ -15,6 +15,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "SocialPilot - AI-Powered Social Media Banner Generator",
   description: "Generate branded advertising banners using AI and schedule them automatically on social media platforms",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default async function RootLayout({
