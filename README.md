@@ -1,6 +1,6 @@
-# SocialPilot - AI-Powered Social Media Banner Generator
+# Bannerly - AI-Powered Social Media Banner Generator
 
-SocialPilot is a SaaS application that allows users to generate branded advertising banners using AI and schedule them automatically on social media platforms (Facebook, Instagram, LinkedIn, TikTok) from a single interface.
+Bannerly is a SaaS application that allows users to generate branded advertising banners using AI and schedule them automatically on social media platforms (Facebook, Instagram, LinkedIn, TikTok) from a single interface.
 
 ## Features
 

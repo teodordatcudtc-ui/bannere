@@ -13,8 +13,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "SocialPilot - AI-Powered Social Media Banner Generator",
-  description: "Generate branded advertising banners using AI and schedule them automatically on social media platforms",
+  title: "Bannerly - Generează Bannere cu AI și Programează-le Automat pe Social Media",
+  description: "Generează bannere profesionale cu AI folosind brand kit-ul tău și programează-le automat pe Facebook, Instagram, LinkedIn și TikTok. Economisește timp și creează conținut de calitate pentru rețelele tale sociale.",
+  keywords: "bannere AI, generare bannere, programare social media, Facebook, Instagram, LinkedIn, TikTok, marketing digital, bannere publicitare",
+  openGraph: {
+    title: "Bannerly - Generează Bannere cu AI și Programează-le Automat",
+    description: "Generează bannere profesionale cu AI și programează-le automat pe toate platformele de social media. Economisește timp și creează conținut de calitate.",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {

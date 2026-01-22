@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/server';
 
 export const metadata: Metadata = {
-  title: "Politica de Confidențialitate - SocialPilot",
-  description: "Politica de confidențialitate a platformei SocialPilot",
+  title: "Politica de Confidențialitate - Bannerly",
+  description: "Politica de confidențialitate a platformei Bannerly. Află cum protejăm datele tale personale.",
 };
 
 export default async function PrivacyPage() {
@@ -18,7 +18,7 @@ export default async function PrivacyPage() {
       <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/">
-            <h1 className="text-xl font-bold text-gray-900">SocialPilot</h1>
+            <h1 className="text-xl font-bold text-gray-900">Bannerly</h1>
           </Link>
           <div className="flex gap-3">
             {user ? (
@@ -54,7 +54,7 @@ export default async function PrivacyPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Introducere</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              La SocialPilot („noi", „nostru", „a noastră"), respectăm confidențialitatea dvs. și ne angajăm să protejăm datele personale pe care ni le furnizați. Această Politică de Confidențialitate explică cum colectăm, utilizăm, dezvăluim și protejăm informațiile dvs. atunci când utilizați platforma noastră („Serviciul").
+              La Bannerly („noi", „nostru", „a noastră"), respectăm confidențialitatea dvs. și ne angajăm să protejăm datele personale pe care ni le furnizați. Această Politică de Confidențialitate explică cum colectăm, utilizăm, dezvăluim și protejăm informațiile dvs. atunci când utilizați platforma noastră („Serviciul").
             </p>
             <p className="text-gray-700 leading-relaxed">
               Utilizând Serviciul, acceptați practicile descrise în această Politică de Confidențialitate. Dacă nu sunteți de acord cu această politică, vă rugăm să nu utilizați Serviciul.
@@ -288,9 +288,9 @@ export default async function PrivacyPage() {
               Pentru întrebări, solicitări sau preocupări despre această Politică de Confidențialitate sau despre modul în care procesăm datele dvs., vă rugăm să ne contactați:
             </p>
             <p className="text-gray-700 leading-relaxed">
-              <strong>SocialPilot</strong><br />
-              Email: <a href="mailto:privacy@socialpilot.com" className="text-[#8B7CFF] hover:underline">privacy@socialpilot.com</a><br />
-              Responsabil cu protecția datelor: <a href="mailto:dpo@socialpilot.com" className="text-[#8B7CFF] hover:underline">dpo@socialpilot.com</a>
+              <strong>Bannerly</strong><br />
+              Email: <a href="mailto:privacy@bannerly.com" className="text-[#8B7CFF] hover:underline">privacy@bannerly.com</a><br />
+              Responsabil cu protecția datelor: <a href="mailto:dpo@bannerly.com" className="text-[#8B7CFF] hover:underline">dpo@bannerly.com</a>
             </p>
           </section>
         </div>
@@ -301,7 +301,7 @@ export default async function PrivacyPage() {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-4">SocialPilot</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Bannerly</h3>
               <p className="text-sm text-gray-600">
                 Soluția completă pentru generarea și programarea bannerelor de social media.
               </p>
@@ -332,7 +332,7 @@ export default async function PrivacyPage() {
             </div>
           </div>
           <div className="border-t border-gray-200 pt-8 text-center text-sm text-gray-600">
-            <p>&copy; 2024 SocialPilot. Toate drepturile rezervate.</p>
+            <p>&copy; 2024 Bannerly. Toate drepturile rezervate.</p>
           </div>
         </div>
       </footer>

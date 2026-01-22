@@ -40,7 +40,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#F0F4FF] via-[#F8F9FF] to-[#E8EDFF]">
       <Card className="w-full max-w-md border-0 bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl">
         <CardHeader className="p-6">
-          <CardTitle className="text-2xl font-bold text-gray-900">Autentificare în SocialPilot</CardTitle>
+          <CardTitle className="text-2xl font-bold text-gray-900">Autentificare în Bannerly</CardTitle>
           <CardDescription className="text-base text-gray-600">
             Introdu credențialele pentru a accesa contul tău
           </CardDescription>

@@ -63,7 +63,7 @@ export function DashboardLayout({ children, credits = 0 }: DashboardLayoutProps)
         <div className="p-6 border-b border-gray-100">
           <Link href="/">
             <h1 className="text-xl font-bold bg-gradient-to-r from-[#8B7CFF] to-[#A78BFA] bg-clip-text text-transparent cursor-pointer hover:opacity-80 transition-opacity">
-              SocialPilot
+              Bannerly
             </h1>
           </Link>
         </div>
@@ -121,7 +121,7 @@ export function DashboardLayout({ children, credits = 0 }: DashboardLayoutProps)
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
           <Link href="/" onClick={() => setMobileMenuOpen(false)}>
             <h1 className="text-xl font-bold bg-gradient-to-r from-[#8B7CFF] to-[#A78BFA] bg-clip-text text-transparent">
-              SocialPilot
+              Bannerly
             </h1>
           </Link>
           <button

@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/server';
 
 export const metadata: Metadata = {
-  title: "Termeni și Condiții - SocialPilot",
-  description: "Termenii și condițiile de utilizare ale platformei SocialPilot",
+  title: "Termeni și Condiții - Bannerly",
+  description: "Termenii și condițiile de utilizare ale platformei Bannerly",
 };
 
 export default async function TermsPage() {
@@ -18,7 +18,7 @@ export default async function TermsPage() {
       <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/">
-            <h1 className="text-xl font-bold text-gray-900">SocialPilot</h1>
+            <h1 className="text-xl font-bold text-gray-900">Bannerly</h1>
           </Link>
           <div className="flex gap-3">
             {user ? (
@@ -54,17 +54,17 @@ export default async function TermsPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Acceptarea Termenilor</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              Prin accesarea și utilizarea platformei SocialPilot („Serviciul"), acceptați să fiți legați de acești Termeni și Condiții („Termeni"). Dacă nu sunteți de acord cu oricare dintre acești termeni, nu aveți permisiunea de a accesa sau utiliza Serviciul.
+              Prin accesarea și utilizarea platformei Bannerly („Serviciul"), acceptați să fiți legați de acești Termeni și Condiții („Termeni"). Dacă nu sunteți de acord cu oricare dintre acești termeni, nu aveți permisiunea de a accesa sau utiliza Serviciul.
             </p>
             <p className="text-gray-700 leading-relaxed">
-              SocialPilot este o platformă SaaS care oferă servicii de generare de bannere cu AI și programare automată pe platformele de social media. Utilizând Serviciul, confirmați că aveți cel puțin 18 ani sau că aveți consimțământul unui părinte sau tutore legal.
+              Bannerly este o platformă SaaS care oferă servicii de generare de bannere cu AI și programare automată pe platformele de social media. Utilizând Serviciul, confirmați că aveți cel puțin 18 ani sau că aveți consimțământul unui părinte sau tutore legal.
             </p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">2. Descrierea Serviciului</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              SocialPilot oferă următoarele servicii:
+              Bannerly oferă următoarele servicii:
             </p>
             <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
               <li>Generare de bannere publicitare folosind tehnologie AI</li>
@@ -129,7 +129,7 @@ export default async function TermsPage() {
               <strong>Conținut generat:</strong> Vă acordăm toate drepturile de proprietate intelectuală asupra bannerelelor și imaginilor generate prin intermediul Serviciului. Puteți utiliza acest conținut în scopuri comerciale și necomerciale.
             </p>
             <p className="text-gray-700 leading-relaxed mb-4">
-              <strong>Platforma SocialPilot:</strong> Toate drepturile de proprietate intelectuală asupra platformei, inclusiv designul, codul, logo-urile și marca SocialPilot, rămân proprietatea noastră sau a licențiatorilor noștri.
+              <strong>Platforma Bannerly:</strong> Toate drepturile de proprietate intelectuală asupra platformei, inclusiv designul, codul, logo-urile și marca Bannerly, rămân proprietatea noastră sau a licențiatorilor noștri.
             </p>
             <p className="text-gray-700 leading-relaxed">
               Nu aveți permisiunea de a copia, modifica, distribui, vinde sau licenția orice parte a Serviciului fără consimțământul nostru scris prealabil.
@@ -155,7 +155,7 @@ export default async function TermsPage() {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">8. Conectarea Conturilor de Social Media</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              Serviciul permite conectarea conturilor dvs. de social media pentru programarea automată a postărilor. Prin conectarea unui cont, acordați permisiunea SocialPilot de a:
+              Serviciul permite conectarea conturilor dvs. de social media pentru programarea automată a postărilor. Prin conectarea unui cont, acordați permisiunea Bannerly de a:
             </p>
             <ul className="list-disc list-inside text-gray-700 space-y-2 mb-4 ml-4">
               <li>Publica conținut în numele dvs. pe platformele conectate</li>
@@ -254,7 +254,7 @@ export default async function TermsPage() {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-4">SocialPilot</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Bannerly</h3>
               <p className="text-sm text-gray-600">
                 Soluția completă pentru generarea și programarea bannerelor de social media.
               </p>
@@ -284,7 +284,7 @@ export default async function TermsPage() {
             </div>
           </div>
           <div className="border-t border-gray-200 pt-8 text-center text-sm text-gray-600">
-            <p>&copy; 2024 SocialPilot. Toate drepturile rezervate.</p>
+            <p>&copy; 2024 Bannerly. Toate drepturile rezervate.</p>
           </div>
         </div>
       </footer>

@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
         if (ip !== 'unknown' && !ip.startsWith('127.') && !ip.startsWith('192.168.')) {
           const response = await fetch(`https://ipapi.co/${ip}/country_code/`, {
             headers: {
-              'User-Agent': 'SocialPilot/1.0'
+              'User-Agent': 'Bannerly/1.0'
             }
           })
           

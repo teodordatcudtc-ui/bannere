@@ -20,7 +20,7 @@ export function LandingContent({ user }: LandingContentProps) {
       <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/">
-            <h1 className="text-xl font-bold text-gray-900">SocialPilot</h1>
+            <h1 className="text-xl font-bold text-gray-900">Bannerly</h1>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="#features" className="text-sm text-gray-700 hover:text-gray-900">
@@ -457,7 +457,7 @@ export function LandingContent({ user }: LandingContentProps) {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-4">SocialPilot</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Bannerly</h3>
               <p className="text-sm text-gray-600">
                 {t('landing.footer.description')}
               </p>

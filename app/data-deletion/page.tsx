@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Ștergere Date Utilizator - SocialPilot',
+  title: 'Ștergere Date Utilizator - Bannerly',
   description: 'Instrucțiuni pentru ștergerea datelor utilizatorului',
 }
 
