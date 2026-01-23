@@ -149,20 +149,35 @@ export default function SettingsPage() {
     }
   }
 
-  const handleDisconnectAccount = async (accountId: string) => {
+  const handleDisconnectAccount = async (accountId: string, platform: string) => {
     if (!confirm(t('settings.disconnectConfirm'))) {
       return
     }
 
     try {
-      const { error } = await supabase
-        .from('social_accounts')
-        .update({ is_active: false })
-        .eq('id', accountId)
+      setError(null)
+      
+      // Call API to disconnect account (deletes from Supabase and Outstand)
+      const response = await fetch('/api/social-accounts/disconnect', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accountId,
+          platform,
+        }),
+      })
 
-      if (error) throw error
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to disconnect account')
+      }
 
+      // Refresh social accounts list
       fetchSocialAccounts()
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 3000)
     } catch (err: any) {
       setError(err.message || 'A apărut o eroare la deconectare')
     }
@@ -403,7 +418,7 @@ export default function SettingsPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleDisconnectAccount(connectedAccount.id)}
+                        onClick={() => handleDisconnectAccount(connectedAccount.id, connectedAccount.platform)}
                         className="text-xs"
                       >
                         {t('settings.disconnect')}
