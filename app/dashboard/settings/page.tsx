@@ -135,8 +135,9 @@ export default function SettingsPage() {
       console.log('Connect response:', data)
       
       if (data.authUrl) {
-        // Redirect to Facebook OAuth
-        console.log('Redirecting to:', data.authUrl)
+        // Redirect to OAuth page
+        // For TikTok, the URL has been modified to include parameters that force re-authentication
+        console.log('Redirecting to OAuth:', data.authUrl)
         window.location.href = data.authUrl
       } else {
         console.error('No authUrl in response:', data)

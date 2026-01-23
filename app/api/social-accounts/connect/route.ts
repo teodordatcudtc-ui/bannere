@@ -58,11 +58,26 @@ export async function POST(request: Request) {
     // Outstand API: POST /v1/social-networks/:network/auth-url
     const callbackUrl = redirectUri || `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/social-accounts/callback`
     
+    // Prepare request body - for TikTok, we want to force re-authentication
+    const requestBody: any = {
+      redirect_uri: callbackUrl,
+    }
+    
+    // For TikTok, add parameters to force account selection
+    // Add a unique state parameter to prevent automatic re-login
+    if (outstandPlatform === 'tiktok') {
+      // Add timestamp to make each request unique and force fresh authentication
+      requestBody.state = `tiktok_${Date.now()}_${Math.random().toString(36).substring(7)}`
+      // Some OAuth providers support prompt parameter
+      // We'll add it to the redirect_uri as a query parameter if Outstand doesn't support it directly
+    }
+    
     console.log('Requesting auth URL from Outstand:', {
       platform: outstandPlatform,
       callbackUrl,
       apiUrl: `${OUTSTAND_API_URL}/social-networks/${outstandPlatform}/auth-url`,
       hasApiKey: !!OUTSTAND_API_KEY,
+      requestBody,
     })
     
     try {
@@ -74,9 +89,7 @@ export async function POST(request: Request) {
             'Authorization': `Bearer ${OUTSTAND_API_KEY}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            redirect_uri: callbackUrl,
-          }),
+          body: JSON.stringify(requestBody),
         }
       )
       
@@ -107,7 +120,7 @@ export async function POST(request: Request) {
       
       // Check authUrl first (most common in Outstand docs: data.data.authUrl)
       // Also check for common variations - try all possible locations
-      const authUrl = (data.data && data.data.authUrl) ||
+      let authUrl = (data.data && data.data.authUrl) ||
                      (data.data && data.data.url) ||
                      responseData.authUrl ||
                      responseData.auth_url || 
@@ -140,6 +153,41 @@ export async function POST(request: Request) {
           },
           { status: 500 }
         )
+      }
+      
+      // For TikTok, modify the OAuth URL to force account selection
+      // TikTok OAuth may cache the session, so we add parameters to force re-authentication
+      if (outstandPlatform === 'tiktok') {
+        try {
+          const url = new URL(authUrl)
+          
+          // Add a unique state parameter to prevent session reuse
+          // This forces TikTok to show the login page again
+          const uniqueState = `force_login_${Date.now()}_${Math.random().toString(36).substring(7)}`
+          if (!url.searchParams.has('state')) {
+            url.searchParams.set('state', uniqueState)
+          } else {
+            // Append to existing state to make it unique
+            const existingState = url.searchParams.get('state') || ''
+            url.searchParams.set('state', `${existingState}_${uniqueState}`)
+          }
+          
+          // Try to add prompt parameter (may not be supported by TikTok, but won't break if ignored)
+          // TikTok may ignore unsupported parameters, so we try it
+          url.searchParams.set('prompt', 'select_account')
+          
+          // Add a timestamp to make URL unique and prevent caching
+          url.searchParams.set('_t', Date.now().toString())
+          
+          authUrl = url.toString()
+          console.log('✅ Modified TikTok auth URL to force account selection:', authUrl)
+        } catch (urlError: any) {
+          console.warn('Could not modify auth URL (may not be a valid URL):', urlError.message)
+          // If URL parsing fails, try to append parameters manually
+          const separator = authUrl.includes('?') ? '&' : '?'
+          const uniqueParam = `_force_login=${Date.now()}`
+          authUrl = `${authUrl}${separator}${uniqueParam}`
+        }
       }
       
       console.log('✅ Extracted authUrl:', authUrl)
