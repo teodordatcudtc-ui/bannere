@@ -58,18 +58,29 @@ export async function POST(request: Request) {
     // Outstand API: POST /v1/social-networks/:network/auth-url
     const callbackUrl = redirectUri || `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/social-accounts/callback`
     
+    // For TikTok, we'll handle callback differently
+    // Instead of popup=true, we'll redirect callback to parent window
+    // This ensures cookies are shared and user is detected
+    const finalCallbackUrl = callbackUrl
+    
     // Prepare request body - for TikTok, we want to force re-authentication
     const requestBody: any = {
-      redirect_uri: callbackUrl,
+      redirect_uri: finalCallbackUrl,
     }
     
     // For TikTok, add parameters to force account selection
-    // Add a unique state parameter to prevent automatic re-login
+    // Outstand may support additional parameters to pass to TikTok OAuth
     if (outstandPlatform === 'tiktok') {
-      // Add timestamp to make each request unique and force fresh authentication
-      requestBody.state = `tiktok_${Date.now()}_${Math.random().toString(36).substring(7)}`
-      // Some OAuth providers support prompt parameter
-      // We'll add it to the redirect_uri as a query parameter if Outstand doesn't support it directly
+      // Add a unique state to make each request unique
+      // This helps prevent TikTok from using cached session
+      requestBody.state = `tiktok_new_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`
+      
+      // Try to pass provider-specific parameters to Outstand
+      // These might be forwarded to TikTok OAuth endpoint
+      // Note: Outstand may or may not support these, but we try
+      requestBody.provider_prompt = 'select_account'
+      requestBody.force_account_selection = true
+      requestBody.force_login = true
     }
     
     console.log('Requesting auth URL from Outstand:', {
@@ -155,38 +166,52 @@ export async function POST(request: Request) {
         )
       }
       
-      // For TikTok, modify the OAuth URL to force account selection
-      // TikTok OAuth may cache the session, so we add parameters to force re-authentication
+      // For TikTok, modify the OAuth URL to force account selection and re-authentication
+      // Use max_age=0 to force fresh authentication every time (OAuth standard)
+      // Also add prompt=login and provider-specific parameters
       if (outstandPlatform === 'tiktok') {
         try {
           const url = new URL(authUrl)
           
-          // Add a unique state parameter to prevent session reuse
-          // This forces TikTok to show the login page again
-          const uniqueState = `force_login_${Date.now()}_${Math.random().toString(36).substring(7)}`
-          if (!url.searchParams.has('state')) {
-            url.searchParams.set('state', uniqueState)
-          } else {
-            // Append to existing state to make it unique
-            const existingState = url.searchParams.get('state') || ''
-            url.searchParams.set('state', `${existingState}_${uniqueState}`)
-          }
+          // CRITICAL: Replace the state parameter completely with a new one
+          // TikTok uses state to track sessions, so a new state = new session
+          const newState = `tiktok_reauth_${Date.now()}_${Math.random().toString(36).substring(2, 15)}_${Math.random().toString(36).substring(2, 10)}`
+          url.searchParams.set('state', newState)
           
-          // Try to add prompt parameter (may not be supported by TikTok, but won't break if ignored)
-          // TikTok may ignore unsupported parameters, so we try it
-          url.searchParams.set('prompt', 'select_account')
+          // CRITICAL: max_age=0 forces re-authentication every time (OAuth/OIDC standard)
+          // This is the recommended way to force fresh login
+          url.searchParams.set('max_age', '0')
+          url.searchParams.set('provider_max_age', '0')
           
-          // Add a timestamp to make URL unique and prevent caching
-          url.searchParams.set('_t', Date.now().toString())
+          // Also add prompt parameters (may help as UX hint)
+          url.searchParams.set('prompt', 'login')
+          url.searchParams.set('provider_prompt', 'login')
+          
+          // Add select_account to force account selection
+          url.searchParams.set('provider_prompt', 'select_account login')
+          
+          // Additional parameters that might help
+          url.searchParams.set('force_login', 'true')
+          url.searchParams.set('reauthenticate', '1')
+          
+          // Add a unique nonce/timestamp to make URL completely unique
+          // This prevents any caching at any level
+          url.searchParams.set('nonce', `${Date.now()}_${Math.random().toString(36).substring(2, 15)}`)
+          url.searchParams.set('_', Date.now().toString())
+          url.searchParams.set('_r', Math.random().toString(36).substring(2, 15))
+          url.searchParams.set('_force_new_session', '1')
           
           authUrl = url.toString()
-          console.log('✅ Modified TikTok auth URL to force account selection:', authUrl)
+          console.log('✅ Modified TikTok auth URL to force account selection')
+          console.log('✅ New state parameter:', newState)
+          console.log('✅ Added parameters: max_age=0, provider_max_age=0, prompt=login, provider_prompt=select_account login')
+          console.log('✅ Full modified URL (first 250 chars):', authUrl.substring(0, 250))
         } catch (urlError: any) {
-          console.warn('Could not modify auth URL (may not be a valid URL):', urlError.message)
-          // If URL parsing fails, try to append parameters manually
+          console.warn('Could not modify auth URL:', urlError.message)
+          // If URL parsing fails, append parameters manually
           const separator = authUrl.includes('?') ? '&' : '?'
-          const uniqueParam = `_force_login=${Date.now()}`
-          authUrl = `${authUrl}${separator}${uniqueParam}`
+          const newState = `tiktok_reauth_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`
+          authUrl = `${authUrl}${separator}state=${encodeURIComponent(newState)}&max_age=0&provider_max_age=0&prompt=login&provider_prompt=select_account+login&_=${Date.now()}`
         }
       }
       

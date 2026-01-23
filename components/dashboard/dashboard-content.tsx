@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Sparkles, Calendar, Image as ImageIcon, ArrowRight, TrendingUp, Clock, CheckCircle, Facebook, Instagram, Linkedin, Music, BarChart3 } from 'lucide-react'
+import { Sparkles, Calendar, Image as ImageIcon, ArrowRight, TrendingUp, Clock, CheckCircle, Facebook, Instagram, Linkedin, Music, BarChart3, Download } from 'lucide-react'
 import { format } from 'date-fns'
 import { ro, enUS } from 'date-fns/locale'
 import { useI18n } from '@/lib/i18n/context'
@@ -261,17 +261,40 @@ export function DashboardContent({
         </div>
         {recentImages && recentImages.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
-            {recentImages.map((image) => (
-              <Card key={image.id} className="overflow-hidden border-0 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all">
-                <div className="aspect-square relative overflow-hidden rounded-t-2xl">
-                  <img
-                    src={image.image_url}
-                    alt="Banner generat"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </Card>
-            ))}
+            {recentImages.map((image) => {
+              const handleDownload = () => {
+                // Use API endpoint for proper download
+                const downloadUrl = `/api/download-image?url=${encodeURIComponent(image.image_url)}&id=${image.id || Date.now()}`
+                const link = document.createElement('a')
+                link.href = downloadUrl
+                link.download = `banner-${image.id || Date.now()}.png`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+              }
+              return (
+                <Card key={image.id} className="overflow-hidden border-0 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all group">
+                  <div className="aspect-square relative overflow-hidden rounded-t-2xl">
+                    <img
+                      src={image.image_url}
+                      alt="Banner generat"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={handleDownload}
+                        className="bg-white text-gray-900 hover:bg-gray-100"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              )
+            })}
           </div>
         ) : (
           <Card className="border-0 bg-white rounded-2xl shadow-sm">

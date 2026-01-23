@@ -233,9 +233,13 @@ BEGIN
   INSERT INTO public.profiles (id, email, full_name)
   VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'full_name');
   
-  -- Initialize credits with 0
+  -- Initialize credits with 10 free trial credits
   INSERT INTO public.credits (user_id, amount)
-  VALUES (NEW.id, 0);
+  VALUES (NEW.id, 10);
+  
+  -- Log the free trial credits transaction
+  INSERT INTO public.credit_transactions (user_id, amount, type, description)
+  VALUES (NEW.id, 10, 'refund', 'Free trial credits - Welcome bonus');
   
   RETURN NEW;
 END;

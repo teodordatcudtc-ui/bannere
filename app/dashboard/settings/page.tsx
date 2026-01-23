@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Upload, Facebook, Instagram, Linkedin, Music, Check, X as XIcon, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useI18n } from '@/lib/i18n/context'
+import { EarlyAccessGate } from '@/components/early-access-gate'
 
 export default function SettingsPage() {
   const { t } = useI18n()
@@ -135,10 +136,119 @@ export default function SettingsPage() {
       console.log('Connect response:', data)
       
       if (data.authUrl) {
-        // Redirect to OAuth page
-        // For TikTok, the URL has been modified to include parameters that force re-authentication
-        console.log('Redirecting to OAuth:', data.authUrl)
-        window.location.href = data.authUrl
+        // For TikTok, open OAuth in a popup window to allow account selection
+        // This isolates the OAuth session from the main window
+        if (platform === 'tiktok') {
+          // Clear any TikTok-related localStorage/sessionStorage that might cache the session
+          try {
+            sessionStorage.removeItem('tiktok_oauth_state')
+            sessionStorage.removeItem('tiktok_session')
+            localStorage.removeItem('tiktok_oauth_state')
+          } catch (e) {
+            // Ignore if storage is not available
+          }
+          
+          // Use an intermediate logout page that clears TikTok session, then redirects to OAuth
+          // This endpoint will attempt to logout from TikTok, then redirect to OAuth with max_age=0
+          const popupWidth = 600
+          const popupHeight = 700
+          const left = (window.screen.width - popupWidth) / 2
+          const top = (window.screen.height - popupHeight) / 2
+          
+          // Create intermediate URL that does logout then redirects to OAuth
+          const intermediateUrl = `/api/social-accounts/tiktok-logout?oauth_url=${encodeURIComponent(data.authUrl)}`
+          
+          // Open popup to intermediate logout page
+          // This page will attempt to logout from TikTok, then redirect to OAuth
+          // The OAuth URL already has max_age=0 parameter to force fresh login
+          const popup = window.open(
+            intermediateUrl,
+            'TikTok OAuth',
+            `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes`
+          )
+          
+          if (!popup) {
+            throw new Error('Popup blocked. Please allow popups for this site.')
+          }
+          
+          // Listen for messages from the popup (when OAuth completes)
+          const messageListener = (event: MessageEvent) => {
+            // Verify origin for security
+            if (event.origin !== window.location.origin) {
+              return
+            }
+            
+            if (event.data.type === 'TIKTOK_OAUTH_SUCCESS') {
+              console.log('TikTok OAuth completed successfully')
+              popup?.close()
+              window.removeEventListener('message', messageListener)
+              // Refresh social accounts list
+              fetchSocialAccounts()
+              setSuccess(true)
+              setTimeout(() => setSuccess(false), 3000)
+              setConnectingPlatform(null)
+            } else if (event.data.type === 'TIKTOK_OAUTH_ERROR') {
+              console.error('TikTok OAuth error:', event.data.error)
+              popup?.close()
+              window.removeEventListener('message', messageListener)
+              setError(event.data.error || 'A apărut o eroare la conectare')
+              setConnectingPlatform(null)
+            } else if (event.data.type === 'REQUEST_AUTH_TOKEN') {
+              // Popup is requesting auth token - send it
+              // Get auth token from Supabase
+              const supabase = (window as any).supabase
+              if (supabase) {
+                supabase.auth.getSession().then(({ data: { session } }: any) => {
+                  if (session?.access_token) {
+                    popup?.postMessage({
+                      type: 'AUTH_TOKEN_RESPONSE',
+                      token: session.access_token
+                    }, window.location.origin)
+                  } else {
+                    popup?.postMessage({
+                      type: 'AUTH_TOKEN_ERROR',
+                      error: 'No session found'
+                    }, window.location.origin)
+                  }
+                }).catch((err: any) => {
+                  popup?.postMessage({
+                    type: 'AUTH_TOKEN_ERROR',
+                    error: err.message
+                  }, window.location.origin)
+                })
+              } else {
+                popup?.postMessage({
+                  type: 'AUTH_TOKEN_ERROR',
+                  error: 'Supabase client not available'
+                }, window.location.origin)
+              }
+            }
+          }
+          
+          window.addEventListener('message', messageListener)
+          
+          // Also check if popup was closed manually
+          const checkPopupClosed = setInterval(() => {
+            if (popup.closed) {
+              clearInterval(checkPopupClosed)
+              window.removeEventListener('message', messageListener)
+              setConnectingPlatform(null)
+            }
+          }, 1000)
+          
+          // Cleanup on component unmount
+          return () => {
+            clearInterval(checkPopupClosed)
+            window.removeEventListener('message', messageListener)
+            if (popup && !popup.closed) {
+              popup.close()
+            }
+          }
+        } else {
+          // For other platforms, use standard redirect
+          console.log('Redirecting to OAuth:', data.authUrl)
+          window.location.href = data.authUrl
+        }
       } else {
         console.error('No authUrl in response:', data)
         throw new Error(data.error || 'No auth URL received from server. Check server logs for details.')
@@ -157,6 +267,22 @@ export default function SettingsPage() {
 
     try {
       setError(null)
+      
+      // For TikTok, clear any potential session storage that might cache OAuth state
+      if (platform === 'tiktok') {
+        try {
+          // Clear session storage that might cache TikTok OAuth
+          sessionStorage.removeItem('tiktok_oauth_state')
+          sessionStorage.removeItem('tiktok_session')
+          sessionStorage.removeItem('tiktok_auth')
+          // Also try to clear any TikTok-related localStorage
+          localStorage.removeItem('tiktok_oauth_state')
+          localStorage.removeItem('tiktok_session')
+        } catch (e) {
+          // Ignore if storage is not available
+          console.log('Could not clear storage:', e)
+        }
+      }
       
       // Call API to disconnect account (deletes from Supabase and Outstand)
       const response = await fetch('/api/social-accounts/disconnect', {
@@ -365,6 +491,10 @@ export default function SettingsPage() {
       </Card>
 
       {/* Social Media Accounts */}
+      <EarlyAccessGate />
+      
+      {/* Hidden original content - uncomment when ready to enable */}
+      {false && (
       <Card className="border-0 bg-white rounded-2xl shadow-sm">
         <CardHeader className="p-6">
           <CardTitle className="text-xl font-bold text-gray-900 mb-2">{t('settings.socialAccounts')}</CardTitle>
@@ -455,6 +585,7 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+      )}
     </div>
   )
 }

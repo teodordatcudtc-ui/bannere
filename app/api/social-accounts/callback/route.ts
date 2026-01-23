@@ -20,13 +20,103 @@ export async function GET(request: Request) {
   console.log('🔵 Request URL:', request.url)
   
   try {
+    // Check if this is a popup callback first
+    const { searchParams: initialSearchParams } = new URL(request.url)
+    const isPopup = initialSearchParams.get('popup') === 'true'
+    
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
 
     console.log('🔵 User check:', user ? `User ID: ${user.id}` : 'No user')
+    console.log('🔵 User error:', userError || 'None')
+    console.log('🔵 Is popup:', isPopup)
+    console.log('🔵 Request headers:', Object.fromEntries(request.headers.entries()))
 
     if (!user) {
       console.error('❌ No user found in callback')
+      
+      // For popup, try to get session from cookies manually
+      // Popup might not share cookies with parent window
+      if (isPopup) {
+        // Return HTML that redirects to a server endpoint that can handle auth
+        // The endpoint will set cookies and redirect back
+        const redirectUrl = new URL('/api/social-accounts/callback', request.url)
+        redirectUrl.searchParams.set('popup', 'true')
+        // Copy all search params from current request
+        const currentUrl = new URL(request.url)
+        currentUrl.searchParams.forEach((value, key) => {
+          if (key !== 'popup') {
+            redirectUrl.searchParams.set(key, value)
+          }
+        })
+        
+        return new NextResponse(
+          `<!DOCTYPE html>
+<html>
+<head>
+  <title>Authentication Required</title>
+</head>
+<body>
+  <script>
+    // Try to get auth from parent window via postMessage
+    if (window.opener) {
+      let authReceived = false;
+      
+      // Request auth from parent
+      window.opener.postMessage({
+        type: 'REQUEST_AUTH_TOKEN'
+      }, window.location.origin);
+      
+      // Listen for response
+      const messageHandler = function(event) {
+        if (event.origin !== window.location.origin) return;
+        
+        if (event.data.type === 'AUTH_TOKEN_RESPONSE' && event.data.token && !authReceived) {
+          authReceived = true;
+          // Store token temporarily and reload with it
+          sessionStorage.setItem('temp_auth_token', event.data.token);
+          // Reload page - server should check for token in sessionStorage
+          window.location.reload();
+        } else if (event.data.type === 'AUTH_TOKEN_ERROR' && !authReceived) {
+          authReceived = true;
+          window.opener.postMessage({
+            type: 'TIKTOK_OAUTH_ERROR',
+            error: 'Authentication required. Please log in first.'
+          }, window.location.origin);
+          setTimeout(() => { window.close(); }, 2000);
+        }
+      };
+      
+      window.addEventListener('message', messageHandler);
+      
+      // Timeout
+      setTimeout(function() {
+        if (!authReceived) {
+          authReceived = true;
+          window.removeEventListener('message', messageHandler);
+          window.opener.postMessage({
+            type: 'TIKTOK_OAUTH_ERROR',
+            error: 'Authentication timeout. Please try again.'
+          }, window.location.origin);
+          setTimeout(() => { window.close(); }, 500);
+        }
+      }, 5000);
+    } else {
+      // Not in popup, redirect to login
+      window.location.href = '/auth/login?error=unauthorized&redirect=' + encodeURIComponent(window.location.href);
+    }
+  </script>
+  <p>Authenticating... Please wait.</p>
+</body>
+</html>`,
+          {
+            headers: {
+              'Content-Type': 'text/html',
+            },
+          }
+        )
+      }
+      
       return NextResponse.redirect(
         new URL('/auth/login?error=unauthorized', request.url)
       )
@@ -51,6 +141,47 @@ export async function GET(request: Request) {
     // Handle OAuth errors
     if (error) {
       console.error('OAuth error:', error)
+      
+      // Check if this is a popup callback
+      const { searchParams } = new URL(request.url)
+      const isPopup = searchParams.get('popup') === 'true'
+      
+      if (isPopup) {
+        // Return an HTML page that closes the popup and sends error message to parent
+        return new NextResponse(
+          `<!DOCTYPE html>
+<html>
+<head>
+  <title>Connection Error</title>
+</head>
+<body>
+  <script>
+    // Send error message to parent window
+    if (window.opener) {
+      window.opener.postMessage({
+        type: 'TIKTOK_OAUTH_ERROR',
+        error: 'OAuth error: ${error}'
+      }, window.location.origin);
+      // Close popup after a short delay
+      setTimeout(() => {
+        window.close();
+      }, 500);
+    } else {
+      // If no opener, redirect normally
+      window.location.href = '/dashboard/settings?error=oauth_${error}';
+    }
+  </script>
+  <p>Connection error. This window will close automatically.</p>
+</body>
+</html>`,
+          {
+            headers: {
+              'Content-Type': 'text/html',
+            },
+          }
+        )
+      }
+      
       return NextResponse.redirect(
         new URL(`/dashboard/settings?error=oauth_${error}`, request.url)
       )
@@ -77,6 +208,39 @@ export async function GET(request: Request) {
     }
 
     if (!sessionToken) {
+      // Check if this is a popup callback
+      const isPopup = searchParams.get('popup') === 'true'
+      
+      if (isPopup) {
+        return new NextResponse(
+          `<!DOCTYPE html>
+<html>
+<head>
+  <title>Connection Error</title>
+</head>
+<body>
+  <script>
+    if (window.opener) {
+      window.opener.postMessage({
+        type: 'TIKTOK_OAUTH_ERROR',
+        error: 'Missing session token'
+      }, window.location.origin);
+      setTimeout(() => { window.close(); }, 500);
+    } else {
+      window.location.href = '/dashboard/settings?error=missing_session';
+    }
+  </script>
+  <p>Connection error. This window will close automatically.</p>
+</body>
+</html>`,
+          {
+            headers: {
+              'Content-Type': 'text/html',
+            },
+          }
+        )
+      }
+      
       return NextResponse.redirect(
         new URL('/dashboard/settings?error=missing_session', request.url)
       )
@@ -99,6 +263,39 @@ export async function GET(request: Request) {
       if (!pendingResponse.ok) {
         const errorText = await pendingResponse.text()
         console.error('Outstand pending accounts error:', errorText)
+        
+        // Check if this is a popup callback
+        const isPopup = searchParams.get('popup') === 'true'
+        if (isPopup) {
+          return new NextResponse(
+            `<!DOCTYPE html>
+<html>
+<head>
+  <title>Connection Error</title>
+</head>
+<body>
+  <script>
+    if (window.opener) {
+      window.opener.postMessage({
+        type: 'TIKTOK_OAUTH_ERROR',
+        error: 'Failed to fetch pages: ${errorText}'
+      }, window.location.origin);
+      setTimeout(() => { window.close(); }, 500);
+    } else {
+      window.location.href = '/dashboard/settings?error=failed_to_fetch_pages';
+    }
+  </script>
+  <p>Connection error. This window will close automatically.</p>
+</body>
+</html>`,
+            {
+              headers: {
+                'Content-Type': 'text/html',
+              },
+            }
+          )
+        }
+        
         return NextResponse.redirect(
           new URL('/dashboard/settings?error=failed_to_fetch_pages', request.url)
         )
@@ -113,6 +310,39 @@ export async function GET(request: Request) {
       // If no accounts available, redirect with error
       if (!availableAccounts || availableAccounts.length === 0) {
         console.error('❌ No accounts available in pending response')
+        
+        // Check if this is a popup callback
+        const isPopup = searchParams.get('popup') === 'true'
+        if (isPopup) {
+          return new NextResponse(
+            `<!DOCTYPE html>
+<html>
+<head>
+  <title>Connection Error</title>
+</head>
+<body>
+  <script>
+    if (window.opener) {
+      window.opener.postMessage({
+        type: 'TIKTOK_OAUTH_ERROR',
+        error: 'No pages available'
+      }, window.location.origin);
+      setTimeout(() => { window.close(); }, 500);
+    } else {
+      window.location.href = '/dashboard/settings?error=no_pages_available';
+    }
+  </script>
+  <p>Connection error. This window will close automatically.</p>
+</body>
+</html>`,
+            {
+              headers: {
+                'Content-Type': 'text/html',
+              },
+            }
+          )
+        }
+        
         return NextResponse.redirect(
           new URL('/dashboard/settings?error=no_pages_available', request.url)
         )
@@ -134,12 +364,79 @@ export async function GET(request: Request) {
       return NextResponse.redirect(selectionUrl.toString())
     } catch (error: any) {
       console.error('Error fetching pending accounts:', error)
+      
+      // Check if this is a popup callback
+      const isPopup = searchParams.get('popup') === 'true'
+      if (isPopup) {
+        return new NextResponse(
+          `<!DOCTYPE html>
+<html>
+<head>
+  <title>Connection Error</title>
+</head>
+<body>
+  <script>
+    if (window.opener) {
+      window.opener.postMessage({
+        type: 'TIKTOK_OAUTH_ERROR',
+        error: 'Connection failed: ${error.message || 'Unknown error'}'
+      }, window.location.origin);
+      setTimeout(() => { window.close(); }, 500);
+    } else {
+      window.location.href = '/dashboard/settings?error=connection_failed';
+    }
+  </script>
+  <p>Connection error. This window will close automatically.</p>
+</body>
+</html>`,
+          {
+            headers: {
+              'Content-Type': 'text/html',
+            },
+          }
+        )
+      }
+      
       return NextResponse.redirect(
         new URL('/dashboard/settings?error=connection_failed', request.url)
       )
     }
   } catch (error: any) {
     console.error('Error in OAuth callback:', error)
+    
+    // Check if this is a popup callback
+    const { searchParams: catchSearchParams } = new URL(request.url)
+    const isPopup = catchSearchParams.get('popup') === 'true'
+    if (isPopup) {
+      return new NextResponse(
+        `<!DOCTYPE html>
+<html>
+<head>
+  <title>Connection Error</title>
+</head>
+<body>
+  <script>
+    if (window.opener) {
+      window.opener.postMessage({
+        type: 'TIKTOK_OAUTH_ERROR',
+        error: 'Callback error: ${error.message || 'Unknown error'}'
+      }, window.location.origin);
+      setTimeout(() => { window.close(); }, 500);
+    } else {
+      window.location.href = '/dashboard/settings?error=callback_error';
+    }
+  </script>
+  <p>Connection error. This window will close automatically.</p>
+</body>
+</html>`,
+        {
+          headers: {
+            'Content-Type': 'text/html',
+          },
+        }
+      )
+    }
+    
     return NextResponse.redirect(
       new URL('/dashboard/settings?error=callback_error', request.url)
     )
@@ -218,6 +515,41 @@ async function syncAccountsFromOutstand(
 
     if (accounts.length === 0) {
       console.error('No accounts found or created')
+      
+      // Check if this is a popup callback
+      const { searchParams: noAccountsSearchParams } = new URL(baseUrl)
+      const isPopup = noAccountsSearchParams.get('popup') === 'true'
+      
+      if (isPopup) {
+        return new NextResponse(
+          `<!DOCTYPE html>
+<html>
+<head>
+  <title>Connection Error</title>
+</head>
+<body>
+  <script>
+    if (window.opener) {
+      window.opener.postMessage({
+        type: 'TIKTOK_OAUTH_ERROR',
+        error: 'No accounts found'
+      }, window.location.origin);
+      setTimeout(() => { window.close(); }, 500);
+    } else {
+      window.location.href = '/dashboard/settings?error=no_accounts_found';
+    }
+  </script>
+  <p>Connection error. This window will close automatically.</p>
+</body>
+</html>`,
+          {
+            headers: {
+              'Content-Type': 'text/html',
+            },
+          }
+        )
+      }
+      
       return NextResponse.redirect(
         new URL('/dashboard/settings?error=no_accounts_found', baseUrl)
       )
@@ -328,6 +660,58 @@ async function syncAccountsFromOutstand(
     }
 
     console.log('✅ Successfully saved', savedAccounts.length, 'account(s) from Outstand')
+    
+    // Check if this callback came from a popup (for TikTok)
+    // If so, redirect to a page that closes popup and notifies parent
+    const { searchParams } = new URL(baseUrl)
+    const isPopup = searchParams.get('popup') === 'true' || searchParams.get('from_popup') === 'true'
+    
+    if (isPopup) {
+      // Return an HTML page that closes the popup and sends a message to the parent
+      // But first, check if we're actually in a popup
+      return new NextResponse(
+        `<!DOCTYPE html>
+<html>
+<head>
+  <title>Connecting...</title>
+</head>
+<body>
+  <script>
+    // Check if we're in a popup
+    if (window.opener && !window.opener.closed) {
+      // We're in a popup - send success message to parent and close
+      try {
+        window.opener.postMessage({
+          type: 'TIKTOK_OAUTH_SUCCESS',
+          message: 'Account connected successfully'
+        }, window.location.origin);
+        
+        // Close popup after a short delay
+        setTimeout(() => {
+          window.close();
+        }, 500);
+      } catch (e) {
+        console.error('Error sending message to parent:', e);
+        // Fallback: redirect parent window
+        window.opener.location.href = '/dashboard/settings?connected=success';
+        window.close();
+      }
+    } else {
+      // Not in popup or opener closed - redirect normally
+      window.location.href = '/dashboard/settings?connected=success';
+    }
+  </script>
+  <p>Connecting your account... This window will close automatically.</p>
+</body>
+</html>`,
+        {
+          headers: {
+            'Content-Type': 'text/html',
+          },
+        }
+      )
+    }
+    
     return NextResponse.redirect(
       new URL('/dashboard/settings?connected=success', baseUrl)
     )
@@ -566,6 +950,47 @@ async function finalizeConnection(
     }
 
     console.log('✅ Successfully saved', savedAccounts.length, 'account(s)')
+    
+    // Check if this is a popup callback (for TikTok)
+    const { searchParams: finalSearchParams } = new URL(baseUrl)
+    const isPopup = finalSearchParams.get('popup') === 'true'
+    
+    if (isPopup) {
+      // Return an HTML page that closes the popup and sends a message to the parent
+      return new NextResponse(
+        `<!DOCTYPE html>
+<html>
+<head>
+  <title>Connecting...</title>
+</head>
+<body>
+  <script>
+    // Send success message to parent window
+    if (window.opener) {
+      window.opener.postMessage({
+        type: 'TIKTOK_OAUTH_SUCCESS',
+        message: 'Account connected successfully'
+      }, window.location.origin);
+      // Close popup after a short delay
+      setTimeout(() => {
+        window.close();
+      }, 500);
+    } else {
+      // If no opener, redirect normally
+      window.location.href = '/dashboard/settings?connected=success';
+    }
+  </script>
+  <p>Connecting your account... This window will close automatically.</p>
+</body>
+</html>`,
+        {
+          headers: {
+            'Content-Type': 'text/html',
+          },
+        }
+      )
+    }
+    
     return NextResponse.redirect(
       new URL('/dashboard/settings?connected=success', baseUrl)
     )

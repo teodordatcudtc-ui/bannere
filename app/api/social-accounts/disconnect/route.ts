@@ -99,6 +99,11 @@ export async function DELETE(request: Request) {
     }
 
     console.log('Account deleted from Supabase successfully')
+    
+    // For TikTok, we also need to clear any potential OAuth session
+    // This helps ensure that when user reconnects, they can choose a different account
+    // Note: We can't directly clear TikTok cookies from server-side,
+    // but deleting the account from our DB and Outstand should help
 
     return NextResponse.json({
       success: true,

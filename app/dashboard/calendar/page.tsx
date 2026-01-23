@@ -10,6 +10,7 @@ import { ro } from 'date-fns/locale/ro'
 import { CalendarIcon, Facebook, Instagram, Linkedin, Music, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { EarlyAccessGate } from '@/components/early-access-gate'
 
 interface ScheduledPost {
   id: string
@@ -123,13 +124,10 @@ export default function CalendarPage() {
 
   return (
     <div className="space-y-7">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Calendar</h1>
-        <p className="text-base text-gray-600">
-          Vezi toate postările programate pe fiecare zi
-        </p>
-      </div>
+      <EarlyAccessGate />
 
+      {/* Hidden original content - uncomment when ready to enable */}
+      {false && (
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Calendar */}
         <div className="lg:col-span-2">
@@ -288,38 +286,39 @@ export default function CalendarPage() {
             </CardContent>
           </Card>
         </div>
-      </div>
 
-      {/* Monthly Overview */}
-      <Card className="border-0 bg-white rounded-2xl shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold text-gray-900">
-            Prezentare generală - {format(currentMonth, 'MMMM yyyy', { locale: ro })}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-6">
-            <div className="text-center p-4 bg-purple-50 rounded-xl">
-              <div className="text-3xl font-bold text-purple-600 mb-1">
-                {scheduledPosts.filter(p => p.status === 'pending').length}
+        {/* Monthly Overview */}
+        <Card className="border-0 bg-white rounded-2xl shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold text-gray-900">
+              Prezentare generală - {format(currentMonth, 'MMMM yyyy', { locale: ro })}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-6">
+              <div className="text-center p-4 bg-purple-50 rounded-xl">
+                <div className="text-3xl font-bold text-purple-600 mb-1">
+                  {scheduledPosts.filter(p => p.status === 'pending').length}
+                </div>
+                <div className="text-sm text-gray-600">Programate</div>
               </div>
-              <div className="text-sm text-gray-600">Programate</div>
-            </div>
-            <div className="text-center p-4 bg-green-50 rounded-xl">
-              <div className="text-3xl font-bold text-green-600 mb-1">
-                {scheduledPosts.filter(p => p.status === 'posted').length}
+              <div className="text-center p-4 bg-green-50 rounded-xl">
+                <div className="text-3xl font-bold text-green-600 mb-1">
+                  {scheduledPosts.filter(p => p.status === 'posted').length}
+                </div>
+                <div className="text-sm text-gray-600">Publicate</div>
               </div>
-              <div className="text-sm text-gray-600">Publicate</div>
-            </div>
-            <div className="text-center p-4 bg-red-50 rounded-xl">
-              <div className="text-3xl font-bold text-red-600 mb-1">
-                {scheduledPosts.filter(p => p.status === 'failed').length}
+              <div className="text-center p-4 bg-red-50 rounded-xl">
+                <div className="text-3xl font-bold text-red-600 mb-1">
+                  {scheduledPosts.filter(p => p.status === 'failed').length}
+                </div>
+                <div className="text-sm text-gray-600">Eșuate</div>
               </div>
-              <div className="text-sm text-gray-600">Eșuate</div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
+      )}
     </div>
   )
 }

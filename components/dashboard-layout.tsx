@@ -15,7 +15,8 @@ import {
   LogOut,
   CreditCard,
   Menu,
-  X
+  X,
+  Image as ImageIcon
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useI18n } from '@/lib/i18n/context'
@@ -51,6 +52,7 @@ export function DashboardLayout({ children, credits = 0 }: DashboardLayoutProps)
   const navItems = [
     { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
     { href: '/dashboard/playground', label: t('nav.playground'), icon: Sparkles },
+    { href: '/dashboard/gallery', label: t('nav.gallery'), icon: ImageIcon },
     { href: '/dashboard/schedule', label: t('nav.schedule'), icon: Calendar },
     { href: '/dashboard/calendar', label: t('nav.calendar'), icon: CalendarDays },
     { href: '/dashboard/settings', label: t('nav.settings'), icon: Settings },

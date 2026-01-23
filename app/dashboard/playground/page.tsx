@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Loader2, Sparkles, X, Type, Palette, Maximize2, Hash, Image as ImageIcon, FileText, Zap } from 'lucide-react'
+import { Loader2, Sparkles, X, Type, Palette, Maximize2, Hash, Image as ImageIcon, FileText, Zap, Download } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useI18n } from '@/lib/i18n/context'
 
@@ -95,6 +95,17 @@ export default function PlaygroundPage() {
     } catch (err: any) {
       setError(err.message || 'A apărut o eroare')
     }
+  }
+
+  const handleDownload = (imageUrl: string, imageId?: string) => {
+    // Use API endpoint for proper download
+    const downloadUrl = `/api/download-image?url=${encodeURIComponent(imageUrl)}&id=${imageId || Date.now()}`
+    const link = document.createElement('a')
+    link.href = downloadUrl
+    link.download = `banner-${imageId || Date.now()}.png`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
   const fetchCredits = async () => {
@@ -524,17 +535,31 @@ export default function PlaygroundPage() {
                     />
                   </div>
                   <CardContent className="p-4">
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center gap-2">
                       <span className="text-sm text-gray-600">
                         Varianta {index + 1}
                       </span>
-                      <Button
-                        size="sm"
-                        className="text-sm"
-                        onClick={() => router.push(`/dashboard/schedule?imageId=${image.id}`)}
-                      >
-                        Programează
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDownload(image.image_url, image.id)
+                          }}
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          Download
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="text-sm"
+                          onClick={() => router.push(`/dashboard/schedule?imageId=${image.id}`)}
+                        >
+                          Programează
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -561,14 +586,23 @@ export default function PlaygroundPage() {
                     <span className="text-sm text-gray-600">
                       Varianta {generatedImages.findIndex(img => img.id === selectedImagePreview.id) + 1}
                     </span>
-                    <Button
-                      onClick={() => {
-                        setSelectedImagePreview(null)
-                        router.push(`/dashboard/schedule?imageId=${selectedImagePreview.id}`)
-                      }}
-                    >
-                      Programează
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => handleDownload(selectedImagePreview.image_url, selectedImagePreview.id)}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setSelectedImagePreview(null)
+                          router.push(`/dashboard/schedule?imageId=${selectedImagePreview.id}`)
+                        }}
+                      >
+                        Programează
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}

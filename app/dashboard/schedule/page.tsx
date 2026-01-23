@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { CalendarIcon, Loader2, AlertCircle, CheckCircle2, User } from 'lucide-react'
+import { EarlyAccessGate } from '@/components/early-access-gate'
 import { format } from 'date-fns'
 import { ro } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
@@ -295,13 +296,10 @@ export default function SchedulePage() {
 
   return (
     <div className="space-y-7">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Programare postare</h1>
-        <p className="text-base text-gray-600">
-          Programează bannerele pe platformele de social media (5 credite per postare)
-        </p>
-      </div>
+      <EarlyAccessGate />
 
+      {/* Hidden original content - uncomment when ready to enable */}
+      {false && (
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Image Selection */}
         <Card className="border-0 bg-white rounded-2xl shadow-sm">
@@ -667,7 +665,7 @@ export default function SchedulePage() {
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {scheduledDate ? (
-                          format(scheduledDate, 'PPP', { locale: ro })
+                          format(scheduledDate as Date, 'PPP', { locale: ro })
                         ) : (
                           <span>Alege o dată</span>
                         )}
@@ -799,6 +797,7 @@ export default function SchedulePage() {
           </CardContent>
         </Card>
       </div>
+      )}
     </div>
   )
 }
