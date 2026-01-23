@@ -149,12 +149,16 @@ export async function POST(request: Request) {
           imageUrl,
         })
 
+        // Extract TikTok metadata if available
+        const tiktokMetadata = (post as any).tiktok_metadata || null
+
         // Post to social media platforms using Outstand
         const postResults = await postToSocialMedia({
           imageUrl,
           caption: post.caption,
           platforms: post.platforms,
           accountIds: accountIds,
+          tiktokMetadata: tiktokMetadata,
         })
 
         // Check if all platforms succeeded
@@ -351,12 +355,16 @@ export async function GET(request: Request) {
             imageUrl,
           })
 
+          // Extract TikTok metadata if available
+          const tiktokMetadata = (post as any).tiktok_metadata || null
+
           // Post to social media platforms using Outstand
           const postResults = await postToSocialMedia({
             imageUrl,
             caption: post.caption,
             platforms: post.platforms,
             accountIds: accountIds,
+            tiktokMetadata: tiktokMetadata,
           })
 
           // Check if all platforms succeeded

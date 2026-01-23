@@ -13,12 +13,23 @@ if (process.env.NODE_ENV === 'development' && !OUTSTAND_API_KEY) {
   console.warn('⚠️ OUTSTAND_API_KEY is not set. Make sure it\'s in .env.local and restart the dev server.')
 }
 
+export interface TikTokMetadata {
+  privacy_status: 'PUBLIC_TO_EVERYONE' | 'MUTUAL_FOLLOW_FRIENDS' | 'SELF_ONLY'
+  allow_comment: boolean
+  allow_duet: boolean
+  allow_stitch: boolean
+  commercial_content: boolean
+  your_brand: boolean
+  branded_content: boolean
+}
+
 export interface SocialMediaPost {
   imageUrl: string
   caption: string
   platforms: string[] // ['x', 'linkedin', 'instagram', 'tiktok', 'facebook']
   accountIds?: string[] // Outstand account IDs (optional, will use all connected accounts if not provided)
   scheduleAt?: string // ISO 8601 datetime string (optional, for scheduling)
+  tiktokMetadata?: TikTokMetadata // TikTok-specific metadata (required when posting to TikTok)
 }
 
 export interface PostResult {
@@ -132,6 +143,34 @@ export async function postToSocialMedia(
     // Add schedule time if provided (ISO 8601 format)
     if (post.scheduleAt) {
       requestBody.scheduledAt = post.scheduleAt
+    }
+
+    // Add TikTok metadata if TikTok is selected and metadata is provided
+    // According to Outstand documentation: TikTok config uses privacy_level, disable_duet, disable_stitch, disable_comment
+    // Format: { privacy_level?: "PUBLIC_TO_EVERYONE" | "MUTUAL_FOLLOW_FRIENDS" | "SELF_ONLY", 
+    //           disable_duet?: boolean, disable_stitch?: boolean, disable_comment?: boolean }
+    if (post.platforms.includes('tiktok') && post.tiktokMetadata) {
+      const tiktokConfig: any = {
+        privacy_level: post.tiktokMetadata.privacy_status, // Map privacy_status to privacy_level
+        disable_comment: !post.tiktokMetadata.allow_comment, // Invert: allow_comment -> disable_comment
+      }
+      
+      // Only add disable_duet and disable_stitch if they are set (for photo posts, these don't apply)
+      if (post.tiktokMetadata.allow_duet !== undefined) {
+        tiktokConfig.disable_duet = !post.tiktokMetadata.allow_duet
+      }
+      if (post.tiktokMetadata.allow_stitch !== undefined) {
+        tiktokConfig.disable_stitch = !post.tiktokMetadata.allow_stitch
+      }
+      
+      // Add TikTok config to containers (Outstand expects network-specific configs per container)
+      if (requestBody.containers && requestBody.containers.length > 0) {
+        requestBody.containers[0].tiktok = tiktokConfig
+      }
+      
+      // Note: Outstand doesn't support commercial_content, your_brand, branded_content in their API
+      // These are TikTok UX Guidelines requirements for the UI compliance, but Outstand may not pass them through
+      // The UI still needs to collect them for TikTok approval, even if Outstand doesn't use them
     }
 
     console.log('Posting to Outstand:', JSON.stringify(requestBody, null, 2))

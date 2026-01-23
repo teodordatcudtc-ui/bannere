@@ -91,6 +91,7 @@ CREATE TABLE public.scheduled_posts (
   status TEXT NOT NULL DEFAULT 'pending', -- 'pending', 'posted', 'failed'
   outstand_post_id TEXT, -- ID from Outstand API
   posted_at TIMESTAMP WITH TIME ZONE,
+  tiktok_metadata JSONB, -- TikTok-specific metadata (privacy_status, interaction settings, commercial content)
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
