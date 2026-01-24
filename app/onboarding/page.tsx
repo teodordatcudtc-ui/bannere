@@ -207,7 +207,41 @@ export default function OnboardingPage() {
                 type="button"
                 variant="outline"
                 className="text-sm"
-                onClick={() => router.push('/dashboard')}
+                disabled={loading}
+                onClick={async () => {
+                  setLoading(true)
+                  setError(null)
+                  try {
+                    const { data: { user } } = await supabase.auth.getUser()
+                    if (!user) {
+                      router.push('/auth/login')
+                      return
+                    }
+
+                    // Create a default brand kit so user can skip onboarding
+                    const { error: brandKitError } = await supabase
+                      .from('brand_kits')
+                      .upsert({
+                        user_id: user.id,
+                        logo_url: null,
+                        primary_color: '#000000',
+                        secondary_color: '#FFFFFF',
+                        business_description: '',
+                      }, {
+                        onConflict: 'user_id'
+                      })
+
+                    if (brandKitError) {
+                      throw brandKitError
+                    }
+
+                    // Use window.location for a hard redirect to ensure fresh data
+                    window.location.href = '/dashboard'
+                  } catch (err: any) {
+                    setError(err.message || 'A apărut o eroare')
+                    setLoading(false)
+                  }
+                }}
               >
                 Omite acum
               </Button>
