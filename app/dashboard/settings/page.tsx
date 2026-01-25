@@ -25,6 +25,11 @@ export default function SettingsPage() {
   const [success, setSuccess] = useState(false)
   const [socialAccounts, setSocialAccounts] = useState<any[]>([])
   const [connectingPlatform, setConnectingPlatform] = useState<string | null>(null)
+  const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [accountLoading, setAccountLoading] = useState(false)
+  const [accountError, setAccountError] = useState<string | null>(null)
+  const [accountSuccess, setAccountSuccess] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -47,6 +52,7 @@ export default function SettingsPage() {
   useEffect(() => {
     fetchBrandKit()
     fetchSocialAccounts()
+    fetchProfile()
     
     // Check for OAuth callback
     const urlParams = new URLSearchParams(window.location.search)
@@ -61,6 +67,29 @@ export default function SettingsPage() {
       }, 1000)
     }
   }, [])
+
+  const fetchProfile = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    // Get email from auth user
+    setEmail(user.email || '')
+
+    // Get profile data
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, email')
+      .eq('id', user.id)
+      .single()
+
+    if (profile) {
+      setFullName(profile.full_name || '')
+      // Use email from profile if available, otherwise from auth
+      if (profile.email) {
+        setEmail(profile.email)
+      }
+    }
+  }
 
   const fetchBrandKit = async () => {
     const { data: { user } } = await supabase.auth.getUser()
@@ -310,6 +339,58 @@ export default function SettingsPage() {
     }
   }
 
+  const handleUpdateAccount = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAccountLoading(true)
+    setAccountError(null)
+    setAccountSuccess(false)
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.push('/auth/login')
+        return
+      }
+
+      // Validate email
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        throw new Error('Email invalid')
+      }
+
+      // Update email in auth.users if changed
+      if (email !== user.email) {
+        const { error: emailError } = await supabase.auth.updateUser({
+          email: email,
+        })
+
+        if (emailError) {
+          throw emailError
+        }
+      }
+
+      // Update profile in database
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          full_name: fullName || null,
+          email: email || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id)
+
+      if (profileError) {
+        throw profileError
+      }
+
+      setAccountSuccess(true)
+      setTimeout(() => setAccountSuccess(false), 3000)
+    } catch (err: any) {
+      setAccountError(err.message || 'A apărut o eroare la actualizarea datelor')
+    } finally {
+      setAccountLoading(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -378,6 +459,73 @@ export default function SettingsPage() {
           {t('settings.subtitle')}
         </p>
       </div>
+
+      {/* Account Settings */}
+      <Card className="border-0 bg-white rounded-2xl shadow-sm">
+        <CardHeader className="p-6">
+          <CardTitle className="text-xl font-bold text-gray-900 mb-2">Date cont</CardTitle>
+          <CardDescription className="text-sm text-gray-600">
+            Actualizează informațiile tale personale
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6 pt-0">
+          <form onSubmit={handleUpdateAccount} className="space-y-6">
+            {accountError && (
+              <div className="p-4 text-sm text-red-600 bg-red-50 rounded-lg border border-red-200">
+                {accountError}
+              </div>
+            )}
+            {accountSuccess && (
+              <div className="p-4 text-sm text-green-600 bg-green-50 rounded-lg border border-green-200">
+                Datele au fost actualizate cu succes!
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="fullName" className="text-sm font-semibold text-gray-900">
+                Nume complet
+              </Label>
+              <Input
+                id="fullName"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Introdu numele tău complet"
+                className="text-sm"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-semibold text-gray-900">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@example.com"
+                className="text-sm"
+                required
+              />
+              <p className="text-xs text-gray-500">
+                Dacă schimbi email-ul, vei primi un email de confirmare la noua adresă
+              </p>
+            </div>
+
+            <Button type="submit" className="text-sm py-5" disabled={accountLoading}>
+              {accountLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Se salvează...
+                </>
+              ) : (
+                'Salvează modificările'
+              )}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
       <Card className="border-0 bg-white rounded-2xl shadow-sm">
         <CardHeader className="p-6">

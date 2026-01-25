@@ -3,6 +3,14 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Sparkles, Calendar, Image as ImageIcon } from 'lucide-react'
 
+// Recent images for dashboard preview - add your image URLs here
+// Place your images in the public/images/ folder and update the paths below
+const RECENT_IMAGES = [
+  '/images/recent-1.png', // Replace with your first image path
+  '/images/recent-2.png', // Replace with your second image path
+  '/images/recent-3.png', // Replace with your third image path
+]
+
 export function DashboardPreview() {
   return (
     <div className="relative w-full max-w-4xl mx-auto">
@@ -68,12 +76,31 @@ export function DashboardPreview() {
           <div>
             <h4 className="text-xs font-semibold text-gray-900 mb-2">Imagini recente</h4>
             <div className="grid grid-cols-3 gap-2">
-              {[1, 2, 3].map((i) => (
+              {RECENT_IMAGES.map((image, index) => (
                 <div
-                  key={i}
-                  className="aspect-square bg-gradient-to-br from-[#E9D5FF] to-[#C4B5FD] rounded-lg flex items-center justify-center"
+                  key={index}
+                  className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-[#E9D5FF] to-[#C4B5FD] relative"
                 >
-                  <ImageIcon className="h-4 w-4 text-[#8B7CFF]" />
+                  <img
+                    src={image}
+                    alt={`Imagine recentă ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      // Fallback to placeholder if image doesn't exist
+                      const target = e.target as HTMLImageElement
+                      const parent = target.parentElement
+                      if (parent) {
+                        parent.innerHTML = `
+                          <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#E9D5FF] to-[#C4B5FD]">
+                            <svg class="h-4 w-4 text-[#8B7CFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                        `
+                      }
+                    }}
+                  />
                 </div>
               ))}
             </div>

@@ -13,10 +13,10 @@ export default function SubscribeSuccessPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const checkoutId = searchParams.get('checkout_id')
-    if (checkoutId) {
+    const sessionId = searchParams.get('session_id')
+    if (sessionId) {
       // Verify the checkout was successful
-      fetch(`/api/verify-session?checkout_id=${checkoutId}`)
+      fetch(`/api/verify-session?session_id=${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {

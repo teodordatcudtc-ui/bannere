@@ -1,5 +1,4 @@
 import Stripe from 'stripe'
-import { subscriptionPlans as plans } from './subscription-plans'
 
 // Lazy initialization to prevent build-time errors when STRIPE_SECRET_KEY is not set
 let stripeInstance: Stripe | null = null
@@ -23,18 +22,3 @@ export const stripe = new Proxy({} as Stripe, {
     return getStripe()[prop as keyof Stripe]
   },
 })
-
-export const subscriptionPlans = {
-  starter: {
-    ...plans.starter,
-    priceId: process.env.STRIPE_STARTER_PRICE_ID!,
-  },
-  growth: {
-    ...plans.growth,
-    priceId: process.env.STRIPE_GROWTH_PRICE_ID!,
-  },
-  agency: {
-    ...plans.agency,
-    priceId: process.env.STRIPE_AGENCY_PRICE_ID!,
-  },
-} as const

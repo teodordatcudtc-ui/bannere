@@ -476,6 +476,11 @@ export function LandingContent({ user }: LandingContentProps) {
                 <li><Link href="#" className="hover:text-gray-900">{t('landing.footer.about')}</Link></li>
                 <li><Link href="#" className="hover:text-gray-900">{t('landing.footer.blog')}</Link></li>
                 <li><Link href="#contact" className="hover:text-gray-900">{t('nav.contact')}</Link></li>
+                <li>
+                  <a href="mailto:teodordatcu.dtc@gmail.com" className="hover:text-gray-900">
+                    teodordatcu.dtc@gmail.com
+                  </a>
+                </li>
               </ul>
             </div>
             <div>

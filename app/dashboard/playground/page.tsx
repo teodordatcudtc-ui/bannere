@@ -70,33 +70,6 @@ export default function PlaygroundPage() {
     setProductImagePreview(null)
   }
 
-  const handleAddTestCredits = async () => {
-    try {
-      const response = await fetch('/api/credits/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount: 10 }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Eroare la adăugarea creditelor')
-      }
-
-      const data = await response.json()
-      setCredits(data.newAmount)
-      
-      // Show success message briefly
-      const successMsg = `+10 credite adăugate! Total: ${data.newAmount} credite`
-      setError(null)
-      alert(successMsg) // Simple alert for now, can be replaced with toast
-    } catch (err: any) {
-      setError(err.message || 'A apărut o eroare')
-    }
-  }
-
   const handleDownload = (imageUrl: string, imageId?: string) => {
     // Use API endpoint for proper download
     const downloadUrl = `/api/download-image?url=${encodeURIComponent(imageUrl)}&id=${imageId || Date.now()}`
@@ -333,7 +306,6 @@ export default function PlaygroundPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1 variantă - Test rapid</SelectItem>
                     <SelectItem value="5">5 variante - Recomandat</SelectItem>
                     <SelectItem value="10">10 variante - Mai multe opțiuni</SelectItem>
                     <SelectItem value="20">20 variante - Maximum</SelectItem>
@@ -451,24 +423,13 @@ export default function PlaygroundPage() {
 
               {/* Credits Info */}
               <div className="p-6 bg-gradient-to-br from-[#8B7CFF]/10 to-[#A78BFA]/10 rounded-xl border-2 border-[#8B7CFF]/20">
-                <div className="flex justify-between items-center">
-                  <div className="space-y-2">
-                    <p className="text-lg text-gray-900">
-                      <span className="font-bold">Cost:</span> <span className="text-[#8B7CFF] font-semibold">{variantCount} credite</span>
-                    </p>
-                    <p className="text-base text-gray-700">
-                      <span className="font-semibold">Ai disponibile:</span> <span className="font-bold">{credits} credite</span>
-                    </p>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleAddTestCredits}
-                    className="text-sm border-[#8B7CFF] text-[#8B7CFF] hover:bg-[#8B7CFF] hover:text-white font-medium"
-                  >
-                    +10 Test
-                  </Button>
+                <div className="space-y-2">
+                  <p className="text-lg text-gray-900">
+                    <span className="font-bold">Cost:</span> <span className="text-[#8B7CFF] font-semibold">{variantCount} credite</span>
+                  </p>
+                  <p className="text-base text-gray-700">
+                    <span className="font-semibold">Ai disponibile:</span> <span className="font-bold">{credits} credite</span>
+                  </p>
                 </div>
               </div>
 
