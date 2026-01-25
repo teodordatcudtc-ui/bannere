@@ -1,17 +1,17 @@
 export const subscriptionPlans = {
   starter: {
     name: 'Starter',
-    price: 29, // EUR
+    price: 19, // EUR
     credits: 100,
   },
   growth: {
     name: 'Growth',
-    price: 59, // EUR
+    price: 49, // EUR
     credits: 300,
   },
   agency: {
     name: 'Agency',
-    price: 119, // EUR
+    price: 99, // EUR
     credits: 1000,
   },
 } as const

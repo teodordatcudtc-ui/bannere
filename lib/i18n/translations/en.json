@@ -179,7 +179,7 @@
       "startNow": "Start now",
       "starter": {
         "name": "Starter",
-        "price": "€29",
+        "price": "€19",
         "credits": "100 credits/month",
         "features": {
           "aiBanners": "AI banner generation",
@@ -189,7 +189,7 @@
       },
       "growth": {
         "name": "Growth",
-        "price": "€59",
+        "price": "€49",
         "credits": "300 credits/month",
         "features": {
           "allStarter": "Everything in Starter",
@@ -199,7 +199,7 @@
       },
       "agency": {
         "name": "Agency",
-        "price": "€119",
+        "price": "€99",
         "credits": "1000 credits/month",
         "features": {
           "allGrowth": "Everything in Growth",
