@@ -14,7 +14,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { CalendarIcon, Loader2, AlertCircle, CheckCircle2, User } from 'lucide-react'
-import { EarlyAccessGate } from '@/components/early-access-gate'
 import { format } from 'date-fns'
 import { ro } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
@@ -296,10 +295,6 @@ export default function SchedulePage() {
 
   return (
     <div className="space-y-7">
-      <EarlyAccessGate />
-
-      {/* Hidden original content - uncomment when ready to enable */}
-      {false && (
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Image Selection */}
         <Card className="border-0 bg-white rounded-2xl shadow-sm">
@@ -797,7 +792,6 @@ export default function SchedulePage() {
           </CardContent>
         </Card>
       </div>
-      )}
     </div>
   )
 }

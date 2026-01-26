@@ -10,7 +10,6 @@ import { ro } from 'date-fns/locale/ro'
 import { CalendarIcon, Facebook, Instagram, Linkedin, Music, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { EarlyAccessGate } from '@/components/early-access-gate'
 
 interface ScheduledPost {
   id: string
@@ -124,10 +123,6 @@ export default function CalendarPage() {
 
   return (
     <div className="space-y-7">
-      <EarlyAccessGate />
-
-      {/* Hidden original content - uncomment when ready to enable */}
-      {false && (
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Calendar */}
         <div className="lg:col-span-2">
@@ -317,8 +312,7 @@ export default function CalendarPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
-      )}
+        </div>
     </div>
   )
 }

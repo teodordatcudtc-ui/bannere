@@ -277,10 +277,10 @@ export default function PlaygroundPage() {
                     <Label htmlFor="aspectRatio" className="text-lg font-semibold text-gray-900">Format</Label>
                   </div>
                   <Select value={aspectRatio} onValueChange={setAspectRatio}>
-                    <SelectTrigger className="text-base h-11">
+                    <SelectTrigger className="text-base h-11 w-full" size="default">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="min-w-[200px]">
                       <SelectItem value="16:9">📱 16:9 (Facebook, LinkedIn)</SelectItem>
                       <SelectItem value="9:16">📸 9:16 (Stories, TikTok)</SelectItem>
                       <SelectItem value="1:1">⬜ 1:1 (Instagram Post)</SelectItem>

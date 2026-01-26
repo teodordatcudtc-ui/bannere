@@ -46,6 +46,17 @@ export default function OnboardingPage() {
         return
       }
 
+      // Ensure profile exists (required for foreign key constraint)
+      // Use API endpoint that uses admin client to bypass RLS
+      const profileResponse = await fetch('/api/profiles/ensure', {
+        method: 'POST',
+      })
+
+      if (!profileResponse.ok) {
+        const errorData = await profileResponse.json()
+        throw new Error(errorData.error || 'Failed to ensure profile exists')
+      }
+
       let logoUrl = null
 
       // Upload logo if provided
@@ -216,6 +227,17 @@ export default function OnboardingPage() {
                     if (!user) {
                       router.push('/auth/login')
                       return
+                    }
+
+                    // Ensure profile exists (required for foreign key constraint)
+                    // Use API endpoint that uses admin client to bypass RLS
+                    const profileResponse = await fetch('/api/profiles/ensure', {
+                      method: 'POST',
+                    })
+
+                    if (!profileResponse.ok) {
+                      const errorData = await profileResponse.json()
+                      throw new Error(errorData.error || 'Failed to ensure profile exists')
                     }
 
                     // Create a default brand kit so user can skip onboarding

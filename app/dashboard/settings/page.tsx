@@ -11,7 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Upload, Facebook, Instagram, Linkedin, Music, Check, X as XIcon, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useI18n } from '@/lib/i18n/context'
-import { EarlyAccessGate } from '@/components/early-access-gate'
 
 export default function SettingsPage() {
   const { t } = useI18n()
@@ -639,10 +638,6 @@ export default function SettingsPage() {
       </Card>
 
       {/* Social Media Accounts */}
-      <EarlyAccessGate />
-      
-      {/* Hidden original content - uncomment when ready to enable */}
-      {false && (
       <Card className="border-0 bg-white rounded-2xl shadow-sm">
         <CardHeader className="p-6">
           <CardTitle className="text-xl font-bold text-gray-900 mb-2">{t('settings.socialAccounts')}</CardTitle>
@@ -733,7 +728,76 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
-      )}
+
+      {/* Account Deletion */}
+      <Card className="border-0 bg-white rounded-2xl shadow-sm border-red-200">
+        <CardHeader className="p-6">
+          <CardTitle className="text-xl font-bold text-gray-900 mb-2">Ștergere Cont</CardTitle>
+          <CardDescription className="text-sm text-gray-600">
+            Șterge permanent contul tău și toate datele asociate. Această acțiune este ireversibilă.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6 pt-0">
+          <div className="p-4 bg-red-50 rounded-lg border border-red-200 mb-4">
+            <p className="text-sm text-red-800 mb-2">
+              <strong>Atenție:</strong> Ștergerea contului va elimina permanent:
+            </p>
+            <ul className="text-sm text-red-700 list-disc list-inside space-y-1">
+              <li>Toate bannerele generate</li>
+              <li>Toate postările programate</li>
+              <li>Brand kit-ul tău</li>
+              <li>Conturile de social media conectate</li>
+              <li>Creditele și abonamentul</li>
+            </ul>
+          </div>
+          <Button
+            variant="destructive"
+            onClick={async () => {
+              if (!confirm('Ești sigur că vrei să ștergi contul? Această acțiune este permanentă și ireversibilă.')) {
+                return
+              }
+              
+              const finalConfirm = prompt('Pentru a confirma, scrie "ȘTERGE" în acest câmp:')
+              if (finalConfirm !== 'ȘTERGE') {
+                alert('Confirmare anulată. Contul nu a fost șters.')
+                return
+              }
+
+              try {
+                setError(null)
+                setLoading(true)
+
+                const response = await fetch('/api/account/delete', {
+                  method: 'DELETE',
+                })
+
+                if (!response.ok) {
+                  const errorData = await response.json()
+                  throw new Error(errorData.error || 'Failed to delete account')
+                }
+
+                // Sign out and redirect
+                await supabase.auth.signOut()
+                window.location.href = '/'
+              } catch (err: any) {
+                setError(err.message || 'A apărut o eroare la ștergerea contului')
+                setLoading(false)
+              }
+            }}
+            disabled={loading}
+            className="w-full"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Se șterge...
+              </>
+            ) : (
+              'Șterge Contul Permanent'
+            )}
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   )
 }
