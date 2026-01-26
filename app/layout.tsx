@@ -5,6 +5,7 @@ import "./globals.css";
 import { I18nProvider } from "@/lib/i18n/context";
 import { Locale } from "@/lib/i18n";
 import { LocaleDetector } from "@/components/locale-detector";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -51,6 +52,7 @@ export default async function RootLayout({
           <LocaleDetector />
           {children}
         </I18nProvider>
+        <Analytics />
       </body>
     </html>
   );
