@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Sparkles, Palette, Calendar, Check, Zap, Wand2, Share2, ArrowRight } from 'lucide-react'
+import { Sparkles, Palette, Calendar, Check, Zap, Wand2, Share2, ArrowRight, Play } from 'lucide-react'
 import { DashboardPreview } from '@/components/dashboard-preview'
 import { useI18n } from '@/lib/i18n/context'
 
@@ -86,7 +86,7 @@ export function LandingContent({ user }: LandingContentProps) {
                   </Link>
                   <Link href="/auth/login" className="w-full md:w-auto">
                     <Button size="lg" variant="outline" className="text-base px-8 py-6 border-2 w-full md:w-auto">
-                      <span className="mr-2">▶</span>
+                      <Play className="h-4 w-4 mr-2" />
                       {t('landing.hero.seeDemo')}
                     </Button>
                   </Link>

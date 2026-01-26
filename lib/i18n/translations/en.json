@@ -242,10 +242,10 @@
     "currentPlan": "Your current plan"
   },
   "earlyAccess": {
-    "title": "🔒 Auto-posting to Facebook & TikTok",
+    "title": "Auto-posting to Facebook & TikTok",
     "description": "Launching in ~2 weeks",
     "emailPlaceholder": "Your email address",
-    "joinButton": "👉 Join early access",
+    "joinButton": "Join early access",
     "success": "Successfully signed up! We'll contact you when the feature is available."
   }
 }

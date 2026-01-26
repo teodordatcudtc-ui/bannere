@@ -242,10 +242,10 @@
     "currentPlan": "Planul tău actual"
   },
   "earlyAccess": {
-    "title": "🔒 Auto-posting pe Facebook & TikTok",
+    "title": "Auto-posting pe Facebook & TikTok",
     "description": "Lansare în ~2 săptămâni",
     "emailPlaceholder": "Adresa ta de email",
-    "joinButton": "👉 Alătură-te early access",
+    "joinButton": "Alătură-te early access",
     "success": "Te-ai înscris cu succes! Te vom contacta când funcționalitatea va fi disponibilă."
   }
 }
