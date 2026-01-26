@@ -24,7 +24,7 @@ export function DashboardPreview() {
             <div className="w-3 h-3 rounded-full bg-green-400"></div>
           </div>
           <div className="flex-1 bg-white rounded px-3 py-1 text-xs text-gray-500 text-center">
-            socialpilot.app/dashboard
+            bannerly.ro/dashboard
           </div>
         </div>
 
@@ -60,7 +60,7 @@ export function DashboardPreview() {
             <Card className="border-0 bg-white shadow-sm">
               <CardContent className="p-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FCA5A5] to-[#EF4444] flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8B7CFF] to-[#A78BFA] flex items-center justify-center">
                     <Calendar className="h-4 w-4 text-white" />
                   </div>
                   <div>

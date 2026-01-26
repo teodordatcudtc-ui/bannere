@@ -64,7 +64,7 @@ export function DashboardContent({
                 <p className="text-xs md:text-sm text-gray-600 mb-1 truncate">{t('dashboard.generatedBanners')}</p>
                 <p className="text-2xl md:text-3xl font-bold text-gray-900">{totalImagesCount}</p>
               </div>
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-[#60A5FA] to-[#3B82F6] flex items-center justify-center shadow-lg flex-shrink-0">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-[#8B7CFF] to-[#A78BFA] flex items-center justify-center shadow-lg flex-shrink-0">
                 <ImageIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
               </div>
             </div>
@@ -78,7 +78,7 @@ export function DashboardContent({
                 <p className="text-xs md:text-sm text-gray-600 mb-1 truncate">{t('dashboard.scheduledPosts')}</p>
                 <p className="text-2xl md:text-3xl font-bold text-gray-900">{totalScheduledCount}</p>
               </div>
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-[#FCA5A5] to-[#EF4444] flex items-center justify-center shadow-lg flex-shrink-0">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-[#8B7CFF] to-[#A78BFA] flex items-center justify-center shadow-lg flex-shrink-0">
                 <Calendar className="h-5 w-5 md:h-6 md:w-6 text-white" />
               </div>
             </div>
@@ -92,7 +92,7 @@ export function DashboardContent({
                 <p className="text-xs md:text-sm text-gray-600 mb-1 truncate">{t('dashboard.publishedPosts')}</p>
                 <p className="text-2xl md:text-3xl font-bold text-gray-900">{totalPostedCount}</p>
               </div>
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-[#34D399] to-[#10B981] flex items-center justify-center shadow-lg flex-shrink-0">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-[#8B7CFF] to-[#A78BFA] flex items-center justify-center shadow-lg flex-shrink-0">
                 <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-white" />
               </div>
             </div>
@@ -122,10 +122,10 @@ export function DashboardContent({
           <Card className="border-0 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all cursor-pointer group overflow-hidden">
             <CardHeader className="p-4 md:p-6">
               <div className="flex items-center justify-between mb-2 md:mb-3">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#FCA5A5] to-[#EF4444] flex items-center justify-center shadow-lg flex-shrink-0">
+                <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#8B7CFF] to-[#A78BFA] flex items-center justify-center shadow-lg flex-shrink-0">
                   <Calendar className="h-6 w-6 md:h-8 md:w-8 text-white" />
                 </div>
-                <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-hover:text-[#EF4444] transition-colors" />
+                <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-hover:text-[#8B7CFF] transition-colors" />
               </div>
               <CardTitle className="text-lg md:text-xl font-bold text-gray-900 mb-1 md:mb-2">{t('dashboard.schedulePosts')}</CardTitle>
               <CardDescription className="text-xs md:text-sm text-gray-600">
@@ -346,9 +346,9 @@ export function DashboardContent({
                       {post.platforms.map((platform: string, index: number) => {
                         const colors = [
                           'bg-gradient-to-r from-[#8B7CFF] to-[#A78BFA]',
-                          'bg-gradient-to-r from-[#60A5FA] to-[#3B82F6]',
-                          'bg-gradient-to-r from-[#FCA5A5] to-[#EF4444]',
-                          'bg-gradient-to-r from-[#34D399] to-[#10B981]',
+                          'bg-gradient-to-r from-[#A78BFA] to-[#C4B5FD]',
+                          'bg-gradient-to-r from-[#8B7CFF] to-[#9678E9]',
+                          'bg-gradient-to-r from-[#C4B5FD] to-[#E9D5FF]',
                         ]
                         return (
                           <span
