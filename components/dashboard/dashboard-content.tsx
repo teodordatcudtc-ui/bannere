@@ -101,39 +101,59 @@ export function DashboardContent({
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5">
-        <Link href="/dashboard/playground">
-          <Card className="border-0 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all cursor-pointer group overflow-hidden">
-            <CardHeader className="p-4 md:p-6">
-              <div className="flex items-center justify-between mb-2 md:mb-3">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#8B7CFF] to-[#A78BFA] flex items-center justify-center shadow-lg flex-shrink-0">
-                  <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-white" />
+      <div className="space-y-4">
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 mt-0.5">
+              <svg className="h-5 w-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-amber-900 mb-1">
+                Funcționalitate în dezvoltare
+              </p>
+              <p className="text-xs text-amber-800">
+                Postarea automată pe social media este în curs de dezvoltare. Poți programa postări, dar acestea vor fi procesate manual în acest moment. Funcționalitatea completă va fi disponibilă în curând.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5">
+          <Link href="/dashboard/playground">
+            <Card className="border-0 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all cursor-pointer group overflow-hidden">
+              <CardHeader className="p-4 md:p-6">
+                <div className="flex items-center justify-between mb-2 md:mb-3">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#8B7CFF] to-[#A78BFA] flex items-center justify-center shadow-lg flex-shrink-0">
+                    <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                  </div>
+                  <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-hover:text-[#8B7CFF] transition-colors" />
                 </div>
-                <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-hover:text-[#8B7CFF] transition-colors" />
-              </div>
-              <CardTitle className="text-lg md:text-xl font-bold text-gray-900 mb-1 md:mb-2">{t('dashboard.generateBanners')}</CardTitle>
-              <CardDescription className="text-xs md:text-sm text-gray-600">
-                {t('dashboard.createBanners')}
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </Link>
-        <Link href="/dashboard/schedule">
-          <Card className="border-0 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all cursor-pointer group overflow-hidden">
-            <CardHeader className="p-4 md:p-6">
-              <div className="flex items-center justify-between mb-2 md:mb-3">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#8B7CFF] to-[#A78BFA] flex items-center justify-center shadow-lg flex-shrink-0">
-                  <Calendar className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                <CardTitle className="text-lg md:text-xl font-bold text-gray-900 mb-1 md:mb-2">{t('dashboard.generateBanners')}</CardTitle>
+                <CardDescription className="text-xs md:text-sm text-gray-600">
+                  {t('dashboard.createBanners')}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+          <Link href="/dashboard/schedule">
+            <Card className="border-0 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all cursor-pointer group overflow-hidden">
+              <CardHeader className="p-4 md:p-6">
+                <div className="flex items-center justify-between mb-2 md:mb-3">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl bg-gradient-to-br from-[#8B7CFF] to-[#A78BFA] flex items-center justify-center shadow-lg flex-shrink-0">
+                    <Calendar className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                  </div>
+                  <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-hover:text-[#8B7CFF] transition-colors" />
                 </div>
-                <ArrowRight className="h-4 w-4 md:h-5 md:w-5 text-gray-400 group-hover:text-[#8B7CFF] transition-colors" />
-              </div>
-              <CardTitle className="text-lg md:text-xl font-bold text-gray-900 mb-1 md:mb-2">{t('dashboard.schedulePosts')}</CardTitle>
-              <CardDescription className="text-xs md:text-sm text-gray-600">
-                {t('dashboard.scheduleBanners')}
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </Link>
+                <CardTitle className="text-lg md:text-xl font-bold text-gray-900 mb-1 md:mb-2">{t('dashboard.schedulePosts')}</CardTitle>
+                <CardDescription className="text-xs md:text-sm text-gray-600">
+                  {t('dashboard.scheduleBanners')}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-5">

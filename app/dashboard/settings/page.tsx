@@ -646,6 +646,24 @@ export default function SettingsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6 pt-0">
+          {/* Development Notice */}
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl mb-6">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg className="h-5 w-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-amber-900 mb-1">
+                  Funcționalitate în dezvoltare
+                </p>
+                <p className="text-xs text-amber-800">
+                  Postarea automată pe social media este în curs de dezvoltare. Poți conecta conturile și programa postări, dar acestea vor fi procesate manual în acest moment. Funcționalitatea completă va fi disponibilă în curând.
+                </p>
+              </div>
+            </div>
+          </div>
           {error && (
             <div className="p-4 text-sm text-red-600 bg-red-50 rounded-lg border border-red-200 mb-4">
               <p className="font-semibold mb-1">{t('common.error')}:</p>
