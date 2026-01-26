@@ -473,8 +473,6 @@ export function LandingContent({ user }: LandingContentProps) {
             <div>
               <h4 className="text-sm font-semibold text-gray-900 mb-4">{t('landing.footer.company')}</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li>{t('landing.footer.about')}</li>
-                <li>{t('landing.footer.blog')}</li>
                 <li>{t('nav.contact')}</li>
                 <li>
                   <a href="mailto:teodordatcu.dtc@gmail.com" className="hover:text-gray-900">
