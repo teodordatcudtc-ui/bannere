@@ -473,9 +473,9 @@ export function LandingContent({ user }: LandingContentProps) {
             <div>
               <h4 className="text-sm font-semibold text-gray-900 mb-4">{t('landing.footer.company')}</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="#" className="hover:text-gray-900">{t('landing.footer.about')}</Link></li>
-                <li><Link href="#" className="hover:text-gray-900">{t('landing.footer.blog')}</Link></li>
-                <li><Link href="#contact" className="hover:text-gray-900">{t('nav.contact')}</Link></li>
+                <li>{t('landing.footer.about')}</li>
+                <li>{t('landing.footer.blog')}</li>
+                <li>{t('nav.contact')}</li>
                 <li>
                   <a href="mailto:teodordatcu.dtc@gmail.com" className="hover:text-gray-900">
                     teodordatcu.dtc@gmail.com
@@ -486,9 +486,7 @@ export function LandingContent({ user }: LandingContentProps) {
             <div>
               <h4 className="text-sm font-semibold text-gray-900 mb-4">{t('landing.footer.support')}</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="#" className="hover:text-gray-900">{t('landing.footer.documentation')}</Link></li>
-                <li><Link href="#" className="hover:text-gray-900">{t('landing.footer.faq')}</Link></li>
-                <li><Link href="#" className="hover:text-gray-900">{t('landing.footer.assistance')}</Link></li>
+                <li><Link href="/faq" className="hover:text-gray-900">{t('landing.footer.faq')}</Link></li>
               </ul>
             </div>
           </div>
