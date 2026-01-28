@@ -33,7 +33,8 @@ export function LandingContent({ user }: LandingContentProps) {
               {t('nav.contact')}
             </Link>
           </nav>
-          <div className="flex gap-3">
+          {/* Auth buttons hidden on mobile to keep header clean */}
+          <div className="hidden md:flex gap-3">
             {user ? (
               <Link href="/dashboard">
                 <Button className="bg-gray-900 hover:bg-gray-800 text-white">
@@ -70,7 +71,13 @@ export function LandingContent({ user }: LandingContentProps) {
                   <span className="text-xs font-semibold text-purple-700">{t('landing.hero.badge')}</span>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-[1.1] text-center md:text-left">
-                  {t('landing.hero.title')} <span className="text-[#8B7CFF]">{t('landing.hero.titleHighlight')}</span>
+                  {/* On mobile, show title and highlight on separate lines */}
+                  <span className="block">
+                    {t('landing.hero.title')}
+                  </span>
+                  <span className="block md:inline text-[#8B7CFF]">
+                    {t('landing.hero.titleHighlight')}
+                  </span>
                 </h1>
                 <p className="text-base text-gray-600 mb-8 leading-relaxed md:block hidden">
                   {t('landing.hero.description')}
