@@ -53,17 +53,34 @@ export default function SettingsPage() {
     fetchSocialAccounts()
     fetchProfile()
     
-    // Check for OAuth callback
     const urlParams = new URLSearchParams(window.location.search)
+    
+    // Check for OAuth callback success
     if (urlParams.get('connected') === 'success') {
       setSuccess(true)
-      // Refresh social accounts immediately and after a short delay to ensure update
       fetchSocialAccounts()
       setTimeout(() => {
-        fetchSocialAccounts() // Refresh again to ensure we have the latest data
+        fetchSocialAccounts()
         setSuccess(false)
         window.history.replaceState({}, '', '/dashboard/settings')
       }, 1000)
+    }
+    
+    // Check for OAuth error (e.g. from Outstand redirect)
+    const oauthError = urlParams.get('error')
+    if (oauthError) {
+      const decoded = decodeURIComponent(oauthError)
+      if (decoded.includes('Facebook Pages') || decoded.includes('No Facebook Pages') || decoded.toLowerCase().includes('pages found')) {
+        setError(
+          'Pentru Facebook trebuie să ai un Pagină Facebook (Page), nu doar un profil personal. ' +
+          'Creează o Pagină la facebook.com/pages/create, asigură-te că ești administrator, apoi încearcă din nou conectarea.'
+        )
+      } else if (decoded.startsWith('oauth_')) {
+        setError(decoded.replace(/^oauth_/, '').replace(/_/g, ' '))
+      } else {
+        setError(decoded)
+      }
+      window.history.replaceState({}, '', '/dashboard/settings')
     }
   }, [])
 
@@ -682,10 +699,14 @@ export default function SettingsPage() {
               const connectedAccount = socialAccounts.find(
                 acc => acc.platform.toLowerCase() === platform.toLowerCase()
               )
+              const isFacebook = platform === 'facebook'
 
               return (
                 <div
                   key={platform}
+                  className="flex flex-col gap-1"
+                >
+                <div
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-xl"
                 >
                   <div className="flex items-center gap-3">
@@ -734,6 +755,12 @@ export default function SettingsPage() {
                       )}
                     </Button>
                   )}
+                </div>
+                {isFacebook && !connectedAccount && (
+                  <p className="text-xs text-gray-500 px-1">
+                    Pentru Facebook ai nevoie de o <strong>Pagină Facebook</strong> (Page), nu doar profil personal. Creează una la facebook.com/pages/create și fii administrator.
+                  </p>
+                )}
                 </div>
               )
             })}
